@@ -1,4 +1,4 @@
-# Hotel Booking App
+# Rhein-Ruhr Hotel Booking App
 
 This is a React.js hotel booking application with Firebase integration. Users can browse multiple hotels, view details, and book hotels after logging in.
 
