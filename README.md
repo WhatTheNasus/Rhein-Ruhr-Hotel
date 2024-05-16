@@ -63,6 +63,3 @@ Contributions are welcome! If you'd like to contribute to this project, please f
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-```
-
-Feel free to copy and paste this template into your README file on GitHub. Let me know if you need any further assistance!
