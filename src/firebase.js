@@ -28,7 +28,6 @@ export const getAllHotels = () => {
       console.log("Error getting documents:", error);
       return [];
   });
-
 };
 
 export const getHotelDetails = (hotelId) => {
@@ -38,5 +37,4 @@ export const getHotelDetails = (hotelId) => {
 export const signIn = (email, password) => {
   // Your code for signing in
 };
-
 
