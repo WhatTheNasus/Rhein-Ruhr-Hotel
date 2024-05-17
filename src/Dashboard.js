@@ -3,6 +3,8 @@ import { getAllHotels } from './firebase'; // Function to fetch all hotels from 
 import { useAuth } from './AuthContext'; // Import AuthContext
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css'; // Import your CSS file (create this file if it doesn't exist)
+import UserLocation from './UserLocation'; // Adjust the path if necessary
+
 
 function Dashboard() {
   const [hotels, setHotels] = useState([]);
@@ -37,6 +39,7 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       <h1>Hotel Dashboard</h1>
+      <UserLocation />
       <input
         type="text"
         placeholder="Search hotels..."
@@ -44,6 +47,7 @@ function Dashboard() {
         onChange={(e) => setSearchTerm(e.target.value)}
         className="search-bar"
       />
+      
       <div className="hotel-list">
         {filteredHotels.map((hotel) => (
           <div key={hotel.id} className="hotel-item">
