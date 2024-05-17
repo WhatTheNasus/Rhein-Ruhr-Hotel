@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const UserLocation = ({ setCurrency }) => {
+const UserLocation = ({ setCurrency, setExchangeRate }) => {
   const [country, setCountry] = useState('');
 
   useEffect(() => {
@@ -16,20 +16,26 @@ const UserLocation = ({ setCurrency }) => {
         const countryResponse = await axios.get(`https://restcountries.com/v3.1/alpha/${countryCode}`);
         const currencyCode = Object.keys(countryResponse.data[0].currencies)[0];
         const currencySymbol = countryResponse.data[0].currencies[currencyCode].symbol;
-
         setCurrency(currencySymbol);
+
+        // Fetch exchange rate from EUR to the local currency
+        const exchangeRateResponse = await axios.get(`https://api.exchangerate-api.com/v4/latest/EUR`);
+        const exchangeRate = exchangeRateResponse.data.rates[currencyCode];
+        setExchangeRate(exchangeRate);
       } catch (error) {
-        setCountry('Could not fetch location');
-        setCurrency('Unknown Currency');
+        setCountry('Unknown');
+        setCurrency('€'); // Default to Euro symbol
+        setExchangeRate(1); // 1 EUR to 1 EUR
       }
     };
 
     fetchLocationAndCurrency();
-  }, [setCurrency]);
+  }, [setCurrency, setExchangeRate]);
 
   return (
     <div>
       <h2>User's location: {country || 'Loading...'}</h2>
+      <p></p>
     </div>
   );
 };

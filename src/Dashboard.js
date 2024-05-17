@@ -5,13 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import './Dashboard.css'; // Import your CSS file (create this file if it doesn't exist)
 import UserLocation from './UserLocation'; // Adjust the path if necessary
 
-
 function Dashboard() {
   const [hotels, setHotels] = useState([]);
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
   const { currentUser } = useAuth(); // Get currentUser from context
   const navigate = useNavigate();
-  const [currency, setCurrency] = useState('');
+  const [currency, setCurrency] = useState('€');
+  const [exchangeRate, setExchangeRate] = useState(1);
 
   useEffect(() => {
     // Fetch all hotels when component mounts
@@ -40,7 +40,10 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       <h1>Hotel Dashboard</h1>
-      <UserLocation setCurrency={setCurrency} />
+      <UserLocation 
+        setCurrency={setCurrency} 
+        setExchangeRate={setExchangeRate} 
+      />
       <input
         type="text"
         placeholder="Search hotels..."
@@ -50,16 +53,19 @@ function Dashboard() {
       />
       
       <div className="hotel-list">
-        {filteredHotels.map((hotel) => (
-          <div key={hotel.id} className="hotel-item">
-            <h2>{hotel.name}</h2>
-            <p>Price: {hotel.price}{currency}</p>
-            <p>Address: {hotel.address}</p>
-            <button onClick={handleBookNow} className="book-button">
-              Book Now
-            </button>
-          </div>
-        ))}
+        {filteredHotels.map((hotel) => {
+          const convertedPrice = (hotel.price * exchangeRate).toFixed(2);
+          return (
+            <div key={hotel.id} className="hotel-item">
+              <h2>{hotel.name}</h2>
+              <p>Price: {convertedPrice} {currency}</p>
+              <p>Address: {hotel.address}</p>
+              <button onClick={handleBookNow} className="book-button">
+                Book Now
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
