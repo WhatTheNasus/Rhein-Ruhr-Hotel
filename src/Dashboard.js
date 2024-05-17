@@ -11,6 +11,7 @@ function Dashboard() {
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
   const { currentUser } = useAuth(); // Get currentUser from context
   const navigate = useNavigate();
+  const [currency, setCurrency] = useState('');
 
   useEffect(() => {
     // Fetch all hotels when component mounts
@@ -39,7 +40,7 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       <h1>Hotel Dashboard</h1>
-      <UserLocation />
+      <UserLocation setCurrency={setCurrency} />
       <input
         type="text"
         placeholder="Search hotels..."
@@ -52,7 +53,7 @@ function Dashboard() {
         {filteredHotels.map((hotel) => (
           <div key={hotel.id} className="hotel-item">
             <h2>{hotel.name}</h2>
-            <p>Price: {hotel.price}€</p>
+            <p>Price: {hotel.price}{currency}</p>
             <p>Address: {hotel.address}</p>
             <button onClick={handleBookNow} className="book-button">
               Book Now
