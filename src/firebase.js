@@ -1,6 +1,6 @@
 import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth'; // If you are using auth
-import 'firebase/compat/firestore'; // If you are using firestore
+import 'firebase/compat/auth'; 
+import 'firebase/compat/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA62NnVI_Hfq-ET3JZUSXo8h6uLFPZv010",
@@ -12,7 +12,8 @@ const firebaseConfig = {
   appId: "1:5527838590:web:45f19869d81567cf8ddd2f",
   measurementId: "G-2TSWV6LGPE"
 };
-const app = firebase.initializeApp(firebaseConfig); 
+
+firebase.initializeApp(firebaseConfig); 
 var db = firebase.firestore();
 
 export const getAllHotels = () => {
@@ -35,6 +36,29 @@ export const getHotelDetails = (hotelId) => {
 };
 
 export const signIn = (email, password) => {
-  // Your code for signing in
+  return firebase.auth().signInWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+      const user = userCredential.user;
+      console.log('User signed in:', user.email);
+      // Handle successful sign-in (e.g., redirect to dashboard)
+    })
+    .catch((error) => {
+      console.error('Sign-in error:', error.message);
+      throw error; // Re-throw the error to be caught in the component
+    });
 };
 
+export const signUp = (email, password) => {
+  return firebase.auth().createUserWithEmailAndPassword(email, password)
+  .then((userCredential) => {
+      const user = userCredential.user;
+      console.log('User signed up:', user.email);
+      // Handle successful sign-up (e.g., redirect to dashboard)
+    })
+    .catch((error) => {
+      console.error('Sign-up error:', error.message);
+      throw error; // Re-throw the error to be caught in the component
+    });
+};
+
+export const auth = firebase.auth();
