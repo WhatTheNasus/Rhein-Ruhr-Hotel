@@ -24,6 +24,7 @@ function Dashboard() {
 
   // Function to handle booking button click
   const handleBookNow = () => {
+    console.log('Booking');
     if (!currentUser) {
       // Prompt user to log in/sign up if not authenticated
       navigate('/signin');
@@ -47,8 +48,8 @@ function Dashboard() {
         {filteredHotels.map((hotel) => (
           <div key={hotel.id} className="hotel-item">
             <h2>{hotel.name}</h2>
-            <p>{hotel.description}</p>
-            <p>{hotel.location}</p>
+            <p>Price: {hotel.price}€</p>
+            <p>Address: {hotel.address}</p>
             <button onClick={handleBookNow} className="book-button">
               Book Now
             </button>

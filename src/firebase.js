@@ -21,8 +21,12 @@ export const getAllHotels = () => {
 
   var hotels = [];
   return colRef.get().then((querySnapshot) => {
+      var i = 1;
       querySnapshot.forEach((doc) => {
-          hotels.push( doc.data() );
+        var data = doc.data();
+        data['id'] = i;
+        hotels.push( data );
+        i++;
       });
       return hotels;
   }).catch((error) => {

@@ -13,17 +13,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/signin" element={<SignIn />} />
-          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/hotels/:hotelId" element={<HotelDetails />} />
         </Routes>
       </Router>
     </AuthProvider>
   );
-}
-
-function PrivateRoute({ children }) {
-  const { currentUser } = useAuth();
-  return currentUser ? children : <Navigate to="/signin" replace />;
 }
 
 export default App;

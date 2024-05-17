@@ -12,6 +12,8 @@ function SignIn() {
   const navigate = useNavigate();
   const { setCurrentUser } = useAuth(); // Get setCurrentUser from context
 
+  console.log(setCurrentUser);
+
   const handleSignIn = async () => {
     try {
       const userCredential = await signIn(email, password);
@@ -43,7 +45,7 @@ function SignIn() {
     <div className="signin-container">
       <div className="signin-form">
         <h2>{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
-        {error && <p className="error-message">{error}</p>}
+        { error && <p className="error-message">{error.slice( 0, error.lastIndexOf('(') ).replace('.', '').replace('Firebase: ', '') + '\n' + error.slice( error.lastIndexOf('(') ).replace('.', '') }</p>} {/* .slice( 0, error.lastIndexOf('(') ) */}
         <input
           type="email"
           placeholder="Email"
