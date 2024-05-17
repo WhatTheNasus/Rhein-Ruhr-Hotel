@@ -46,7 +46,6 @@ npm start
 
 - Browse hotels on the homepage.
 - Click on a hotel to view details and book.
-- Log in to book hotels.
 - Only logged-in users can book hotels.
 
 ## Contributing
