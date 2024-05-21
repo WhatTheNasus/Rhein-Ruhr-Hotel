@@ -21,8 +21,7 @@ body {
   text-align: center;
   font-size: 24px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
+  border-radius: 10px; /* Rounded edges on all corners */
 }
 
 .top-panel h1 {
@@ -54,7 +53,7 @@ body {
 .hotel-item {
   position: relative;
   width: calc(33.333% - 40px);
-  height: 340px; /* Increased height */
+  height: 340px; /* Original height */
   overflow: hidden;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -73,7 +72,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-start; /* Align items to the top */
-  height: 50%; /* Occupy the top half */
+  height: 40%; /* Occupy the top half */
 }
 
 .hotel-item h2 {
