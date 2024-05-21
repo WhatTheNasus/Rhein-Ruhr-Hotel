@@ -99,6 +99,10 @@ function Dashboard() {
                 <h2>{hotel.name}</h2>
                 <p>Price: {convertedPrice} {currency}</p>
                 <p>Address: {hotel.address}</p>
+                <p>
+                  Website: <a href={hotel.link} target="_blank" rel="noopener noreferrer">{hotel.link}</a>
+                </p>
+                <p>Rating: {hotel.rating}/5⭐</p>
               </div>
               {imageUrl ? (
                 <div className="hotel-image-container">
