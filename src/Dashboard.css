@@ -15,7 +15,7 @@ body {
 
 /* Top Panel */
 .top-panel {
-  background-color: #007bff;
+  background-color: #007bff; /* Blue stripe */
   padding: 20px;
   color: white;
   text-align: center;
@@ -27,7 +27,9 @@ body {
 
 .top-panel h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 36px; /* Larger font size */
+  font-weight: bold; /* Bold text */
+  padding: 10px 0; /* Padding for more emphasis */
 }
 
 /* Search Bar */
@@ -50,25 +52,28 @@ body {
 
 /* Hotel Item */
 .hotel-item {
-  padding: 20px;
+  position: relative;
+  width: calc(33.333% - 40px);
+  height: 340px; /* Increased height */
+  overflow: hidden;
   border: 1px solid #ddd;
   border-radius: 8px;
-  width: calc(33.333% - 40px);
-  height: calc(33.333% - 40px); /* Make the item square */
-  box-sizing: border-box;
   background-color: #fff;
-  transition: transform 0.3s, box-shadow 0.3s, width 0.3s, height 0.3s;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .hotel-item:hover {
   transform: scale(1.1); /* Scale evenly from the center */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 10; /* Ensure the hovered item appears above others */
+}
+
+.hotel-item .hotel-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Align items to the top */
+  height: 50%; /* Occupy the top half */
 }
 
 .hotel-item h2 {
@@ -78,7 +83,7 @@ body {
 }
 
 .hotel-item p {
-  margin: 0 0 10px;
+  margin: 0;
   color: #666;
 }
 
@@ -90,40 +95,34 @@ body {
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  align-self: flex-start; /* Align button to the left */
   transition: background-color 0.3s, transform 0.3s;
+  position: absolute;
+  bottom: 10px; /* Position at the bottom */
+  left: 20px;
+  opacity: 0; /* Initially hidden */
+  z-index: 1;
 }
 
-.hotel-item button:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
-}
-
-.hotel-item button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.hotel-item:hover button {
+  opacity: 1; /* Show button on hover */
 }
 
 .hotel-image-container {
   position: absolute;
-  top: 0;
-  left: 0;
+  bottom: 0;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Optional overlay */
+  height: 60%; /* Adjusted height */
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.hotel-item:hover .hotel-image-container {
-  opacity: 1;
+  z-index: 0;
 }
 
 .hotel-image {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -131,13 +130,21 @@ body {
 @media (max-width: 768px) {
   .hotel-item {
     width: calc(50% - 40px);
-    height: calc(50% - 40px); /* Keep the item square */
+  }
+
+  .hotel-item:hover {
+    width: 300px; /* Adjust size for smaller screens */
+    height: 300px; /* Adjust size for smaller screens */
   }
 }
 
 @media (max-width: 480px) {
   .hotel-item {
     width: 100%;
-    height: auto; /* Allow height to adjust based on content */
+  }
+
+  .hotel-item:hover {
+    width: 100%; /* Adjust size for smaller screens */
+    height: auto; /* Adjust size for smaller screens */
   }
 }

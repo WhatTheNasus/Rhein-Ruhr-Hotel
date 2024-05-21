@@ -2,41 +2,57 @@ import React, { useEffect, useState } from 'react';
 import { getAllHotels } from './firebase'; // Function to fetch all hotels from Firestore
 import { useAuth } from './AuthContext'; // Import AuthContext
 import { useNavigate } from 'react-router-dom';
-import { getStorage, ref, getDownloadURL } from 'firebase/storage'; // Import Firebase Storage
-import './Dashboard.css'; // Import your CSS file (create this file if it doesn't exist)
+import './Dashboard.css'; // Import your CSS file
 import UserLocation from './UserLocation'; // Adjust the path if necessary
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 function Dashboard() {
   const [hotels, setHotels] = useState([]);
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
-  const [imageUrls, setImageUrls] = useState({}); // State to store image URLs
   const { currentUser } = useAuth(); // Get currentUser from context
   const navigate = useNavigate();
   const [currency, setCurrency] = useState('€');
   const [exchangeRate, setExchangeRate] = useState(1);
+  const [imageUrls, setImageUrls] = useState({});
 
   useEffect(() => {
     // Fetch all hotels when component mounts
     getAllHotels().then((data) => {
       setHotels(data);
-      fetchImages(data);
     });
   }, []);
 
-  // Fetch image URLs for all hotels
+  useEffect(() => {
+    if (hotels.length > 0) {
+      fetchImages(hotels).then(results => {
+        const imageMap = results.reduce((acc, { name, url }) => {
+          return { ...acc, [name]: url };
+        }, {});
+        setImageUrls(imageMap);
+      });
+    }
+  }, [hotels]);
+
   const fetchImages = (hotels) => {
     const storage = getStorage();
+
     let imagePromises = hotels.map(hotel => {
-      const imageRef = ref(storage, `images/${hotel.name}.jpg`);
+      console.log(`Fetching image for: ${hotel.name}`);
+      const imagePath = `images/${encodeURIComponent(hotel.name)}.jpg`;
+      const imageRef = ref(storage, imagePath);
+
       return getDownloadURL(imageRef)
-        .then(url => ({ [hotel.name]: url }))
-        .catch(() => ({ [hotel.name]: null })); // Handle errors
+        .then(url => {
+          console.log(`Fetched URL for ${hotel.name}: ${url}`);
+          return { name: hotel.name, url };
+        })
+        .catch(error => {
+          console.error(`Failed to fetch image for ${hotel.name}:`, error);
+          return { name: hotel.name, url: null };
+        });
     });
 
-    Promise.all(imagePromises).then(results => {
-      const imageMap = results.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-      setImageUrls(imageMap);
-    });
+    return Promise.all(imagePromises);
   };
 
   // Filter hotels based on search term
@@ -77,23 +93,23 @@ function Dashboard() {
         {filteredHotels.map((hotel) => {
           const convertedPrice = (hotel.price * exchangeRate).toFixed(2);
           const imageUrl = imageUrls[hotel.name];
-
           return (
-            <div 
-              key={hotel.id} 
-              className="hotel-item"
-            >
-              <h2>{hotel.name}</h2>
-              <p>Price: {convertedPrice} {currency}</p>
-              <p>Address: {hotel.address}</p>
+            <div key={hotel.id} className="hotel-item">
+              <div className="hotel-content">
+                <h2>{hotel.name}</h2>
+                <p>Price: {convertedPrice} {currency}</p>
+                <p>Address: {hotel.address}</p>
+              </div>
+              {imageUrl ? (
+                <div className="hotel-image-container">
+                  <img src={imageUrl} alt={`${hotel.name}`} className="hotel-image" />
+                </div>
+              ) : (
+                <p>Image not available</p>
+              )}
               <button onClick={handleBookNow} className="book-button">
                 Book Now
               </button>
-              {imageUrl && (
-                <div className="hotel-image-container">
-                  <img src={imageUrl} alt={hotel.name} className="hotel-image" />
-                </div>
-              )}
             </div>
           );
         })}
