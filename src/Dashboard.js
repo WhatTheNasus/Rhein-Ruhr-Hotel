@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { db, signOut } from './firebase'; // Import signOut from firebase
-import { useAuth } from './AuthContext'; // Import AuthContext
+import { db, signOut } from './firebase';
+import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 import UserLocation from './UserLocation'; // Adjust the path if necessary

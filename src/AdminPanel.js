@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { getAllHotels, updateHotel, addHotel, deleteHotel } from './firebase';
+import { useNavigate } from 'react-router-dom';
+import { db, signOut } from './firebase';
+import { useAuth } from './AuthContext';
+import { collection, onSnapshot } from 'firebase/firestore';
 import './AdminPanel.css';
 
 function AdminPanel() {
   const [hotels, setHotels] = useState([]);
   const [editingHotel, setEditingHotel] = useState(null);
   const [addingHotel, setAddingHotel] = useState(false);
+  const { currentUser, setCurrentUser } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     price: '',
