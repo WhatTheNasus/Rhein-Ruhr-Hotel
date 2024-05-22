@@ -10,7 +10,7 @@ function AdminPanel() {
   const [hotels, setHotels] = useState([]);
   const [editingHotel, setEditingHotel] = useState(null);
   const [addingHotel, setAddingHotel] = useState(false);
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -32,7 +32,12 @@ function AdminPanel() {
       setHotels(updatedHotels);
     });
     return () => unsubscribe();
-  }, []);
+  },);
+
+  //back button use
+  const handleBackClick = () => {
+    navigate('/'); // Navigate to the main dashboard page
+  };
 
   const handleEdit = (hotel) => {
     setEditingHotel(hotel);
@@ -140,6 +145,7 @@ function AdminPanel() {
     <div className="admin-panel">
       <h1>Admin Panel</h1>
       <button className="table-button add" onClick={handleAddHotelClick}>Add Hotel</button>
+      <button onClick={handleBackClick}>Back to Dashboard</button>
       <table>
         <thead>
           <tr>
