@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { signIn, signUp, sendEmailVerification } from './firebase'; // Import Firebase functions including sendEmailVerification
+import { signIn, signUp } from './firebase'; // Import Firebase functions including sendEmailVerification
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Import AuthContext
 import './SignIn.css'; // Import the CSS file for styling
-import { auth } from './firebase';
 
 function SignIn() {
   const [email, setEmail] = useState('');

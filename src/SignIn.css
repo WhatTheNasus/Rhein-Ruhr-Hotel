@@ -1,8 +1,18 @@
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
-  background-color: #f0f4f8;
+  background: linear-gradient(135deg, #eff6ff, #91b3dc); /* Greyish gradient */
+  animation: rotateGradient 10s linear infinite; /* Rotate the gradient */
   color: #333;
+}
+
+@keyframes rotateGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 .signin-container {

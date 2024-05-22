@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAllHotels, updateHotel, addHotel, deleteHotel } from './firebase';
 import { useNavigate } from 'react-router-dom';
-import { db, signOut } from './firebase';
+import { db } from './firebase';
 import { useAuth } from './AuthContext';
 import { collection, onSnapshot } from 'firebase/firestore';
 import './AdminPanel.css';
@@ -22,7 +22,7 @@ function AdminPanel() {
 
   useEffect(() => {
     if (!currentUser || !currentUser.email.endsWith('@admin.com')) {
-      navigate('/signin');
+      navigate('/');
     }
     const unsubscribe = onSnapshot(collection(db, 'hotels'), (snapshot) => {
       const updatedHotels = snapshot.docs.map(doc => ({

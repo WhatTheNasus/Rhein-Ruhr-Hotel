@@ -71,7 +71,7 @@ function Dashboard() {
   };
 
   // Function to check if the user is an admin
-  const isAdmin = () => currentUser && (currentUser.emailVerified || currentUser.email.endsWith('@admin.com'));
+  const isAdmin = () => currentUser && currentUser.email.endsWith('@admin.com');
 
   return (
     <div className="dashboard-container">
@@ -84,7 +84,7 @@ function Dashboard() {
               <button onClick={handleLogout} className="logout-button">Logout</button>
               {isAdmin() && (
                 <button onClick={() => navigate('/admin')} className="admin-button">Go to Admin Panel</button>
-              )}
+              )}  
             </>
           ) : (
             <button onClick={() => navigate('/signin')} className="login-button">Login</button>
