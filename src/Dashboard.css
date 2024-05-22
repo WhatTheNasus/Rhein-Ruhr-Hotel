@@ -46,7 +46,8 @@ body {
 }
 
 .login-button,
-.logout-button {
+.logout-button,
+.admin-button {
   padding: 10px 20px;
   background-color: #ff5733; /* Orange color */
   color: white;
@@ -55,12 +56,22 @@ body {
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s, transform 0.3s;
+  margin-right: 10px;
+}
+
+.admin-button {
+  background-color: #30bd4f; /* Bootstrap green color */
 }
 
 .login-button:hover,
-.logout-button:hover {
+.logout-button:hover,
+.admin-button:hover {
   background-color: #ff704d; /* Lighter orange */
   transform: scale(1.05);
+}
+
+.admin-button:hover {
+  background-color: #49c464; /* A darker shade of green for hover effect */
 }
 
 /* Search Bar */
@@ -178,4 +189,42 @@ body {
     width: 100%; /* Adjust size for smaller screens */
     height: auto; /* Adjust size for smaller screens */
   }
+}
+
+.admin-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* Ensure it's on top of everything */
+}
+
+.admin-panel {
+  position: relative;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Box shadow for depth */
+  width: 80%;
+  max-width: 600px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  color: grey;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  color: darkgrey;
 }

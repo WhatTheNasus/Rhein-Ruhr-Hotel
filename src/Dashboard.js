@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import './Dashboard.css'; // Import your CSS file
 import UserLocation from './UserLocation'; // Adjust the path if necessary
 import HotelItem from './HotelItem'; // Import the HotelItem component
+import AdminPanel from './AdminPanel'; // Import the AdminPanel component
 
 function Dashboard() {
   const [hotels, setHotels] = useState([]);
@@ -13,6 +14,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const [currency, setCurrency] = useState('€');
   const [exchangeRate, setExchangeRate] = useState(1);
+  const [showAdminPanel, setShowAdminPanel] = useState(false); // State to control the display of AdminPanel
 
   useEffect(() => {
     // Fetch all hotels when component mounts
@@ -36,6 +38,9 @@ function Dashboard() {
     hotel.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Function to check if the user is an admin
+  const isAdmin = () => currentUser && currentUser.email.endsWith('@admin.com');
+
   return (
     <div className="dashboard-container">
       <div className="top-panel">
@@ -45,6 +50,9 @@ function Dashboard() {
             <>
               <span className="user-name">{currentUser.email}</span>
               <button onClick={handleLogout} className="logout-button">Logout</button>
+              {isAdmin() && (
+                <button onClick={() => setShowAdminPanel(true)} className="admin-button">Go to Admin Panel</button>
+              )}
             </>
           ) : (
             <button onClick={() => navigate('/signin')} className="login-button">Login</button>
@@ -75,6 +83,14 @@ function Dashboard() {
           />
         ))}
       </div>
+      {showAdminPanel && (
+        <div className="admin-panel-overlay">
+          <div className="admin-panel">
+            <button className="close-button" onClick={() => setShowAdminPanel(false)}>×</button>
+            <AdminPanel />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -81,15 +81,19 @@ export const signOut = () => {
 
 export const sendEmailVerification = () => {
   const user = auth.currentUser;
-  return user.sendEmailVerification()
-    .then(() => {
-      console.log('Email verification sent to', user.email);
-      // Handle successful email verification sending
-    })
-    .catch((error) => {
-      console.error('Email verification error:', error.message);
-      throw error; // Re-throw the error to be caught in the component
-    });
+  if (user) {
+    return user.sendEmailVerification()
+      .then(() => {
+        console.log('Email verification sent to', user.email);
+        // Handle successful email verification sending
+      })
+      .catch((error) => {
+        console.error('Email verification error:', error.message);
+        throw error; // Re-throw the error to be caught in the component
+      });
+  } else {
+    throw new Error('No user is signed in to send verification to');
+  }
 };
 
 export const auth = firebase.auth();

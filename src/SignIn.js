@@ -57,48 +57,42 @@ function SignIn() {
     const monthDiff = today.getMonth() - birthDate.getMonth();
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
-    } if (age < 13) {
-      setError('You must be at least 13 years old to sign up');
+    } if (age < 15) {
+      setError('You must be at least 15 years old to sign up');
+      return;
+    } else if (age > 120) {
+      setError('You must be at most 120 years old to sign up');
       return;
     }
-  
+    
     try {
       const userCredential = await signUp(email, password);
       await sendEmailVerification(); // Send email verification
       setError('A verification email has been sent. Please check your inbox.');
   
-      // Wait for email verification before redirecting to the dashboard
+      // Set up an observer on the Auth object to listen for changes in the authentication state
       const unsubscribe = auth.onAuthStateChanged(user => {
-        if (user && user.emailVerified) {
-          // Update profile only after email is verified
-          user.updateProfile({
-            displayName: `${firstName} ${lastName}`,
-          }).then(() => {
-            setCurrentUser(user); // Set the user in context
-            navigate('/dashboard'); // Redirect to Dashboard
-            unsubscribe(); // Unsubscribe from the auth state observer
-          });
+        if (user) {
+          // Check if the user's email is verified
+          if (user.emailVerified) {
+            // Update profile and navigate to dashboard only after email is verified
+            user.updateProfile({
+              displayName: `${firstName} ${lastName}`,
+            }).then(() => {
+              setCurrentUser(user); // Set the user in context
+              navigate('/dashboard'); // Redirect to Dashboard
+              unsubscribe(); // Unsubscribe from the auth state observer
+            });
+          } else {
+            // If the email is not verified, set an error message prompting the user to verify their email
+            setError('Please verify your email address before proceeding');
+          }
         }
       });
     } catch (err) {
       console.error('Signup error:', err.message);
       setError(err.message);
     }
-  };
-  
-  const waitForEmailVerification = () => {
-    return new Promise((resolve, reject) => {
-      const unsubscribe = auth.onAuthStateChanged(user => {
-        if (user) {
-          if (user.emailVerified) {
-            resolve();
-          } else {
-            setError('Please verify your email address before proceeding');
-          }
-        }
-        unsubscribe();
-      });
-    });
   };
 
   const toggleSignUp = () => {
