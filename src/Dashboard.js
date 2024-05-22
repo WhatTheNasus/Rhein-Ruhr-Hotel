@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { getAllHotels, signOut } from './firebase'; // Import signOut from firebase
+import { db, signOut } from './firebase'; // Import signOut from firebase
 import { useAuth } from './AuthContext'; // Import AuthContext
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css'; // Import your CSS file
 import UserLocation from './UserLocation'; // Adjust the path if necessary
 import HotelItem from './HotelItem'; // Import the HotelItem component
 import AdminPanel from './AdminPanel'; // Import the AdminPanel component
+import { collection, onSnapshot } from 'firebase/firestore';
 
 function Dashboard() {
   const [hotels, setHotels] = useState([]);
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
-  const [sortedBy, setSortedBy] = useState(''); // State for sorting
-  const [sortOrder, setSortOrder] = useState('asc'); // State for sort order
+  const [sortedBy, setSortedBy] = useState('rating'); // Default to sorting by rating
+  const [sortOrder, setSortOrder] = useState('desc'); // Default to descending order
   const { currentUser, setCurrentUser } = useAuth(); // Get currentUser from context
   const navigate = useNavigate();
   const [currency, setCurrency] = useState('€');
@@ -20,11 +21,34 @@ function Dashboard() {
 
   useEffect(() => {
     // Fetch all hotels when component mounts
-    getAllHotels().then((data) => {
-      setHotels(data);
+    const unsubscribe = onSnapshot(collection(db, 'hotels'), (snapshot) => {
+      const updatedHotels = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      const sortedHotels = sortHotels(updatedHotels);
+      setHotels(sortedHotels);
     });
+    return () => unsubscribe();
   }, []);
-  
+
+  useEffect(() => {
+    // Function to sort hotels based on sorting option and order
+    const sortedHotels = sortHotels(hotels);
+    setHotels(sortedHotels);
+  }, [sortedBy, sortOrder]);
+
+  const sortHotels = (hotelsToSort) => {
+    return [...hotelsToSort].sort((a, b) => {
+      if (sortedBy === 'alphabetical') {
+        return sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+      } else if (sortedBy === 'rating') {
+        return sortOrder === 'asc' ? a.rating - b.rating : b.rating - a.rating;
+      }
+      return 0;
+    });
+  };
+
   const handleLogout = async () => {
     try {
       await signOut();
@@ -40,15 +64,10 @@ function Dashboard() {
     hotel.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Sort hotels based on sorting option and order
-  const sortedHotels = [...filteredHotels].sort((a, b) => {
-    if (sortedBy === 'alphabetical') {
-      return sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-    } else if (sortedBy === 'rating') {
-      return sortOrder === 'asc' ? a.rating - b.rating : b.rating - a.rating;
-    }
-    return 0;
-  });
+  // Function to toggle sort order
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
 
   // Function to check if the user is an admin
   const isAdmin = () => currentUser && currentUser.email.endsWith('@admin.com');
@@ -72,7 +91,7 @@ function Dashboard() {
         </div>
       </div>
       <div className="dashboard-options">
-        <UserLocation 
+        <UserLocation  className="user-location"
           setCurrency={setCurrency} 
           setExchangeRate={setExchangeRate} 
         />
@@ -80,18 +99,13 @@ function Dashboard() {
           <label>
             Sort by: 
             <select value={sortedBy} onChange={(e) => setSortedBy(e.target.value)}>
-              <option value="">None</option>
               <option value="alphabetical">Alphabetical</option>
               <option value="rating">Rating</option>
             </select>
           </label>
-          <label>
-            Order: 
-            <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </label>
+          <button className="sort-order-button" onClick={toggleSortOrder}>
+            {sortOrder === 'asc' ? '↑' : '↓'}
+          </button>
         </div>
       </div>
       <input
@@ -103,7 +117,7 @@ function Dashboard() {
       />
       
       <div className="hotel-list">
-        {sortedHotels.map((hotel) => (
+        {filteredHotels.map((hotel) => (
           <HotelItem 
             key={hotel.id} 
             hotel={hotel} 

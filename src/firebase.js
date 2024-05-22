@@ -15,7 +15,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig); 
-var db = firebase.firestore();
+export var db = firebase.firestore();
 
 export const getAllHotels = () => {
   const colRef = db.collection("hotels");
