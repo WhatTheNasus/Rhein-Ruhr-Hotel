@@ -4,52 +4,140 @@ body {
     font-family: 'Arial', sans-serif;
     background-color: #f0f4f8;
     color: #333;
-  }
-  
-  /* Admin Panel */
-  .admin-panel {
+}
+
+/* Admin Panel */
+.admin-panel {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
-  }
-  
-  .admin-panel h1 {
+}
+
+.admin-panel h1 {
     text-align: center;
-  }
-  
-  .admin-panel table {
+}
+
+.admin-panel table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-  }
-  
-  .admin-panel th,
-  .admin-panel td {
+}
+
+.admin-panel th,
+.admin-panel td {
     padding: 10px;
     text-align: left; /* Center the column names to the left */
-  }
-  
-  .admin-panel th:first-child,
-  .admin-panel td:first-child {
+}
+
+.admin-panel th:first-child,
+.admin-panel td:first-child {
     padding-left: 20px; /* Add more spacing to the left of the first column */
-  }
-  
-  .admin-panel th:last-child,
-  .admin-panel td:last-child {
+}
+
+.admin-panel th:last-child,
+.admin-panel td:last-child {
     padding-right: 20px; /* Add more spacing to the right of the last column */
-  }
-  
-  .admin-panel th {
+}
+
+.admin-panel th {
     background-color: #007bff;
     color: white;
-  }
-  
-  .admin-panel td {
+}
+
+.admin-panel td {
     background-color: #fff;
     border: 1px solid #ddd;
-  }
-  
-  .admin-panel tr:hover td {
+}
+
+.admin-panel tr:hover td {
     background-color: #f0f8ff;
-  }
-  
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Vertically center the buttons */
+    gap: 5px;
+}
+
+.table-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.table-button.delete {
+    background-color: #dc3545;
+}
+
+.table-button.add {
+    background-color: #28a745;
+    padding: 8px 20px; /* Adjust padding to make it bigger */
+    font-size: 16px; /* Adjust font size */
+}
+
+/* Adjust background color on hover */
+.table-button.delete:hover {
+    background-color: #990000; /* Change background color to dark red */
+}
+
+.table-button.add:hover {
+    background-color: #066a1e;
+}
+
+.table-button:hover {
+    background-color: #0056b3;
+}
+
+.edit-form {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.edit-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.edit-form input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
+
+.edit-form button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.edit-form button[type="submit"]:hover{
+    background-color: #0056b3; /* Change background color to dark blue */
+}
+
+.edit-form button[type="button"] {
+    margin-left: 10px;
+    background-color: #dc3545; /* Change background color to red */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Adjust background color on hover */
+.edit-form button[type="button"]:hover {
+    background-color: #990000; /* Change background color to dark red */
+}

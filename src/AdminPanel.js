@@ -1,11 +1,11 @@
-
 import React, { useEffect, useState } from 'react';
-import { getAllHotels, updateHotel } from './firebase'; // Import the necessary Firebase functions
+import { getAllHotels, updateHotel, addHotel, deleteHotel } from './firebase';
 import './AdminPanel.css';
 
 function AdminPanel() {
   const [hotels, setHotels] = useState([]);
   const [editingHotel, setEditingHotel] = useState(null);
+  const [addingHotel, setAddingHotel] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -15,32 +15,50 @@ function AdminPanel() {
   });
 
   useEffect(() => {
-    // Fetch all hotels when component mounts
     getAllHotels().then((data) => {
       setHotels(data);
     });
   }, []);
 
-  // Function to handle editing of a hotel
   const handleEdit = (hotel) => {
     setEditingHotel(hotel);
-    setFormData({ ...hotel }); // Set form data to the selected hotel's data
+    setAddingHotel(false);
+    setFormData({ 
+      ...hotel,
+      price: hotel.price.toString(),
+      rating: hotel.rating.toString()
+    });
   };
 
-  // Function to handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const price = parseFloat(formData.price);
+    const rating = parseFloat(formData.rating);
+
+    if (isNaN(price)) {
+      alert('Please enter a valid number for the price.');
+      return;
+    }
+
+    if (isNaN(rating)) {
+      alert('Please enter a valid number for the rating.');
+      return;
+    }
+
+    const updatedFormData = {
+      ...formData,
+      price,
+      rating
+    };
+
     if (editingHotel) {
-      // Remove the 'id' field from the formData object
-      const { id, ...updatedData } = formData;
-      updateHotel(editingHotel.id, updatedData).then(() => {
-        // Once update is successful, clear editing state
+      updateHotel(editingHotel.id, updatedFormData).then(() => {
         setEditingHotel(null);
         setFormData({
           name: '',
@@ -49,13 +67,65 @@ function AdminPanel() {
           link: '',
           rating: ''
         });
+        getAllHotels().then((data) => setHotels(data));
+      }).catch((error) => {
+        console.error('Error updating hotel:', error);
+      });
+    } else if (addingHotel) {
+      addHotel(updatedFormData).then(() => {
+        setAddingHotel(false);
+        setFormData({
+          name: '',
+          price: '',
+          address: '',
+          link: '',
+          rating: ''
+        });
+        getAllHotels().then((data) => setHotels(data));
+      }).catch((error) => {
+        console.error('Error adding hotel:', error);
       });
     }
+  };
+
+  const handleAddHotelClick = () => {
+    setEditingHotel(null);
+    setAddingHotel(true);
+    setFormData({
+      name: '',
+      price: '',
+      address: '',
+      link: '',
+      rating: ''
+    });
+  };
+
+  const handleDelete = (hotelId) => {
+    if (window.confirm('Are you sure you want to delete this hotel?')) {
+      deleteHotel(hotelId).then(() => {
+        getAllHotels().then((data) => setHotels(data));
+      }).catch((error) => {
+        console.error('Error deleting hotel:', error);
+      });
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingHotel(null);
+    setAddingHotel(false);
+    setFormData({
+      name: '',
+      price: '',
+      address: '',
+      link: '',
+      rating: ''
+    });
   };
 
   return (
     <div className="admin-panel">
       <h1>Admin Panel</h1>
+      <button className="table-button add" onClick={handleAddHotelClick}>Add Hotel</button>
       <table>
         <thead>
           <tr>
@@ -75,21 +145,35 @@ function AdminPanel() {
               <td>{hotel.address}</td>
               <td><a href={hotel.link} target="_blank" rel="noopener noreferrer">{hotel.link}</a></td>
               <td>{hotel.rating}</td>
-              <td>
-                <button onClick={() => handleEdit(hotel)}>Edit</button>
+              <td className="actions">
+                <button className="table-button" onClick={() => handleEdit(hotel)}>Edit</button>
+                <button className="table-button delete" onClick={() => handleDelete(hotel.id)}>Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {editingHotel && (
+      {(editingHotel || addingHotel) && (
         <form className="edit-form" onSubmit={handleSubmit}>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Name" />
-          <input type="text" name="price" value={formData.price} onChange={handleChange} placeholder="Price" />
-          <input type="text" name="address" value={formData.address} onChange={handleChange} placeholder="Address" />
-          <input type="text" name="link" value={formData.link} onChange={handleChange} placeholder="Website" />
-          <input type="text" name="rating" value={formData.rating} onChange={handleChange} placeholder="Rating" />
-          <button type="submit">Save</button>
+          <label className="form-label" htmlFor="name">Name</label>
+          <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} required />
+          
+          <label className="form-label" htmlFor="price">Price</label>
+          <input type="number" id="price" name="price" value={formData.price} onChange={handleChange} required />
+          
+          <label className="form-label" htmlFor="address">Address</label>
+          <input type="text" id="address" name="address" value={formData.address} onChange={handleChange} required />
+          
+          <label className="form-label" htmlFor="link">Website</label>
+          <input type="text" id="link" name="link" value={formData.link} onChange={handleChange} required />
+          
+          <label className="form-label" htmlFor="rating">Rating</label>
+          <input type="number" id="rating" name="rating" value={formData.rating} onChange={handleChange} required />
+          
+          <div>
+            <button type="submit">Save</button>
+            <button type="button" className="cancel" onClick={handleCancel}>Cancel</button>
+          </div>
         </form>
       )}
     </div>

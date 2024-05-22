@@ -1,7 +1,7 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth'; 
 import 'firebase/compat/firestore';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, deleteDoc, addDoc, collection } from 'firebase/firestore'; // Import addDoc and collection
 
 const firebaseConfig = {
   apiKey: "AIzaSyA62NnVI_Hfq-ET3JZUSXo8h6uLFPZv010",
@@ -17,23 +17,23 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig); 
 export var db = firebase.firestore();
 
-export const getAllHotels = () => {
+export const getAllHotels = async () => {
   const colRef = db.collection("hotels");
 
   var hotels = [];
-  return colRef.get().then((querySnapshot) => {
-      var i = 1;
-      querySnapshot.forEach((doc) => {
-        var data = doc.data();
-        data['id'] = i;
-        hotels.push( data );
-        i++;
-      });
-      return hotels;
-  }).catch((error) => {
-      console.log("Error getting documents:", error);
-      return [];
-  });
+  try {
+    const querySnapshot = await colRef.get();
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const hotelId = doc.id;
+      const hotel = { id: hotelId, ...data };
+      hotels.push(hotel);
+    });
+    return hotels;
+  } catch (error) {
+    console.error("Error getting documents:", error);
+    return [];
+  }
 };
 
 export const signIn = (email, password) => {
@@ -51,7 +51,7 @@ export const signIn = (email, password) => {
     })
     .catch((error) => {
       console.error('Sign-in error:', error.message);
-      throw error; // Re-throw the error to be caught in the component
+      throw error;
     });
 };
 
@@ -65,14 +65,41 @@ export const signUp = (email, password) => {
     })
     .catch((error) => {
       console.error('Sign-up error:', error.message);
-      throw error; // Re-throw the error to be caught in the component
+      throw error;
     });
 };
 
 export const updateHotel = async (hotelId, updatedData) => {
   const hotelRef = doc(db, 'hotels', hotelId);
-  console.log('Updated Data:', updatedData); // Log the updated data
-  await updateDoc(hotelRef, updatedData);
+  try {
+    await updateDoc(hotelRef, updatedData);
+    console.log('Hotel updated successfully!');
+  } catch (error) {
+    console.error('Error updating hotel:', error);
+    throw error;
+  }
+};
+
+export const deleteHotel = async (hotelId) => {
+  const hotelRef = doc(db, 'hotels', hotelId);
+  try {
+    await deleteDoc(hotelRef);
+    console.log('Hotel deleted successfully!');
+  } catch (error) {
+    console.error('Error deleting hotel:', error);
+    throw error;
+  }
+};
+
+export const addHotel = async (newHotelData) => {
+  const colRef = collection(db, 'hotels');
+  try {
+    await addDoc(colRef, newHotelData);
+    console.log('New hotel added successfully!');
+  } catch (error) {
+    console.error('Error adding new hotel:', error);
+    throw error;
+  }
 };
 
 export const signOut = () => {
@@ -82,7 +109,7 @@ export const signOut = () => {
     })
     .catch((error) => {
       console.error('Sign-out error:', error.message);
-      throw error; // Re-throw the error to be caught in the component
+      throw error;
     });
 };
 
