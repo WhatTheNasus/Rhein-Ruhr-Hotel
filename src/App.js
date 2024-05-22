@@ -7,6 +7,12 @@ import AdminPanel from './AdminPanel';
 import { AuthProvider, useAuth } from './AuthContext';
 import NotFound from './NotFound';
 
+// Protected Route Component to handle authentication
+const ProtectedRoute = ({ element, ...rest }) => {
+  const { currentUser } = useAuth();
+  return currentUser ? element : <Navigate to="/" replace />;
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -16,7 +22,7 @@ function App() {
           {/* <Route path="/" element={<Navigate to="/dashboard" replace />} /> */}
           {/* <Route path="/dashboard" element={<Dashboard />} /> */}
           <Route path="/signin" element={<SignIn />} />
-          {/* <Route path="/admin" element={<AdminPanel />} /> */}
+          <Route path="/admin" element={<ProtectedRoute element={<AdminPanel />} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
