@@ -10,6 +10,8 @@ import AdminPanel from './AdminPanel'; // Import the AdminPanel component
 function Dashboard() {
   const [hotels, setHotels] = useState([]);
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
+  const [sortedBy, setSortedBy] = useState(''); // State for sorting
+  const [sortOrder, setSortOrder] = useState('asc'); // State for sort order
   const { currentUser, setCurrentUser } = useAuth(); // Get currentUser from context
   const navigate = useNavigate();
   const [currency, setCurrency] = useState('€');
@@ -38,6 +40,16 @@ function Dashboard() {
     hotel.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Sort hotels based on sorting option and order
+  const sortedHotels = [...filteredHotels].sort((a, b) => {
+    if (sortedBy === 'alphabetical') {
+      return sortOrder === 'asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+    } else if (sortedBy === 'rating') {
+      return sortOrder === 'asc' ? a.rating - b.rating : b.rating - a.rating;
+    }
+    return 0;
+  });
+
   // Function to check if the user is an admin
   const isAdmin = () => currentUser && currentUser.email.endsWith('@admin.com');
 
@@ -59,10 +71,29 @@ function Dashboard() {
           )}
         </div>
       </div>
-      <UserLocation 
-        setCurrency={setCurrency} 
-        setExchangeRate={setExchangeRate} 
-      />
+      <div className="dashboard-options">
+        <UserLocation 
+          setCurrency={setCurrency} 
+          setExchangeRate={setExchangeRate} 
+        />
+        <div className="sort-options">
+          <label>
+            Sort by: 
+            <select value={sortedBy} onChange={(e) => setSortedBy(e.target.value)}>
+              <option value="">None</option>
+              <option value="alphabetical">Alphabetical</option>
+              <option value="rating">Rating</option>
+            </select>
+          </label>
+          <label>
+            Order: 
+            <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </label>
+        </div>
+      </div>
       <input
         type="text"
         placeholder="Search hotels..."
@@ -72,7 +103,7 @@ function Dashboard() {
       />
       
       <div className="hotel-list">
-        {filteredHotels.map((hotel) => (
+        {sortedHotels.map((hotel) => (
           <HotelItem 
             key={hotel.id} 
             hotel={hotel} 
