@@ -25,7 +25,7 @@ function HotelItem({ hotel, currency, exchangeRate, currentUser, navigate }) {
     if (!currentUser) {
       navigate('/signin');
     } else {
-      window.open(hotel.link, "_blank")
+      window.open(hotel.link, "_blank");
     }
   };
 
