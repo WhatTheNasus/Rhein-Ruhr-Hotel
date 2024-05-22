@@ -36,10 +36,6 @@ export const getAllHotels = () => {
   });
 };
 
-export const getHotelDetails = (hotelId) => {
-  // Your code for fetching details of a hotel
-};
-
 export const signIn = (email, password) => {
   return firebase.auth().signInWithEmailAndPassword(email, password)
   .then((userCredential) => {
@@ -79,6 +75,19 @@ export const signOut = () => {
     })
     .catch((error) => {
       console.error('Sign-out error:', error.message);
+      throw error; // Re-throw the error to be caught in the component
+    });
+};
+
+export const sendEmailVerification = () => {
+  const user = auth.currentUser;
+  return user.sendEmailVerification()
+    .then(() => {
+      console.log('Email verification sent to', user.email);
+      // Handle successful email verification sending
+    })
+    .catch((error) => {
+      console.error('Email verification error:', error.message);
       throw error; // Re-throw the error to be caught in the component
     });
 };

@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { signIn, signUp, signOut } from './firebase'; // Import signOut from firebase
+import { signIn, signUp, signOut, sendEmailVerification } from './firebase'; // Import Firebase functions including sendEmailVerification
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Import AuthContext
 import './SignIn.css'; // Import the CSS file for styling
+import { auth } from './firebase';
 
 function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
   const [error, setError] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
@@ -25,29 +30,75 @@ function SignIn() {
       setError(''); // Clear any previous error messages
       navigate('/dashboard'); // Redirect to Dashboard
     } catch (err) {
+      console.error('Signin error:', error.message);
       setError(err.message);
     }
   };
 
   const handleSignUp = async () => {
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+  
+    if (!email || !password || !confirmPassword || !dateOfBirth) {
+      setError('All fields are required');
+      return;
+    }
+
+    if (password.length < 8 || !/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[!@#$%^&*()_+{}\[\]:;<>,.?/~\\-]/.test(password)) {
+      setError('Password must be at least 8 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character');
+      return;
+    }
+
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    const age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    } if (age < 13) {
+      setError('You must be at least 13 years old to sign up');
+      return;
+    }
+  
     try {
       const userCredential = await signUp(email, password);
-      setCurrentUser(userCredential.user); // Set the user in context
-      setError(''); // Clear any previous error messages
-      navigate('/dashboard'); // Redirect to Dashboard
+      await sendEmailVerification(); // Send email verification
+      setError('A verification email has been sent. Please check your inbox.');
+  
+      // Wait for email verification before redirecting to the dashboard
+      const unsubscribe = auth.onAuthStateChanged(user => {
+        if (user && user.emailVerified) {
+          // Update profile only after email is verified
+          user.updateProfile({
+            displayName: `${firstName} ${lastName}`,
+          }).then(() => {
+            setCurrentUser(user); // Set the user in context
+            navigate('/dashboard'); // Redirect to Dashboard
+            unsubscribe(); // Unsubscribe from the auth state observer
+          });
+        }
+      });
     } catch (err) {
+      console.error('Signup error:', err.message);
       setError(err.message);
     }
   };
-
-  const handleLogout = async () => {
-    try {
-      await signOut();
-      setCurrentUser(null);
-      navigate('/signin'); // Redirect to sign-in page after logout
-    } catch (error) {
-      console.error('Logout error:', error.message);
-    }
+  
+  const waitForEmailVerification = () => {
+    return new Promise((resolve, reject) => {
+      const unsubscribe = auth.onAuthStateChanged(user => {
+        if (user) {
+          if (user.emailVerified) {
+            resolve();
+          } else {
+            setError('Please verify your email address before proceeding');
+          }
+        }
+        unsubscribe();
+      });
+    });
   };
 
   const toggleSignUp = () => {
@@ -59,7 +110,7 @@ function SignIn() {
     <div className="signin-container">
       <div className="signin-form">
         <h2>{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
-        {error && <p className="error-message">{error.slice(0, error.lastIndexOf('(')).replace('.', '').replace('Firebase: ', '') + '\n' + error.slice(error.lastIndexOf('(')).replace('.', '')}</p>}
+        { error && <p className="error-message">{error.replace('.', '').replace('Firebase: ', '') }</p> }
         <input
           type="email"
           placeholder="Email"
@@ -74,13 +125,31 @@ function SignIn() {
           onChange={(e) => setPassword(e.target.value)}
           className="signin-input"
         />
+        {isSignUp && (
+          <>
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="signin-input"
+            />
+            <input
+              type="date"
+              placeholder="Date of Birth"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              className="signin-input"
+            />
+          </>
+        )}
         {isSignUp ? (
           <button onClick={handleSignUp} className="signin-button">Sign Up</button>
         ) : (
           <button onClick={handleSignIn} className="signin-button">Sign In</button>
         )}
         <p className="toggle-link" onClick={toggleSignUp}>
-          {isSignUp ? 'Already have an account? Sign In' : 'Don\'t have an account? Sign Up'}
+          {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
         </p>
       </div>
     </div>

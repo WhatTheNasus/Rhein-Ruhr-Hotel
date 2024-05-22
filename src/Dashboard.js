@@ -20,12 +20,12 @@ function Dashboard() {
       setHotels(data);
     });
   }, []);
-
+  
   const handleLogout = async () => {
     try {
       await signOut();
       setCurrentUser(null);
-      navigate('/signin');
+      navigate('/signin'); // Redirect to sign-in page after logout
     } catch (error) {
       console.error('Logout error:', error.message);
     }
