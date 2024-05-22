@@ -18,8 +18,8 @@ function SignIn() {
 
   useEffect(() => {
     document.title = 'Sign in';
-    if (currentUser && currentUser.user && currentUser.user.email) { // Check if currentUser and its email property exist
-      if (currentUser.emailVerified || currentUser.user.email.endsWith('@admin.com')) {
+    if (currentUser) { // Check if currentUser and its email property exist
+      if (currentUser.emailVerified || currentUser.email.endsWith('@admin.com')) {
         navigate('/');
       }
     }
