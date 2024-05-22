@@ -21,11 +21,11 @@ function HotelItem({ hotel, currency, exchangeRate, currentUser, navigate }) {
     fetchImage();
   }, [hotel.name]);
 
-  const handleBookNow = () => {
+  const handleBookNow = (hotel) => {
     if (!currentUser) {
       navigate('/signin');
     } else {
-      // Handle booking logic
+      window.open(hotel.link, "_blank")
     }
   };
 
@@ -37,9 +37,6 @@ function HotelItem({ hotel, currency, exchangeRate, currentUser, navigate }) {
         <h2>{hotel.name}</h2>
         <p>Price: {convertedPrice} {currency}</p>
         <p>Address: {hotel.address}</p>
-        <p>
-          Website: <a href={hotel.link} target="_blank" rel="noopener noreferrer">{hotel.link}</a>
-        </p>
         <p>Rating: {hotel.rating}/5⭐</p>
       </div>
       <div className="hotel-image-container">
@@ -49,7 +46,7 @@ function HotelItem({ hotel, currency, exchangeRate, currentUser, navigate }) {
           <p>Image not available</p>
         )}
       </div>
-      <button onClick={handleBookNow} className="book-button">
+      <button onClick={() => handleBookNow(hotel)} className="book-button">
         Book Now
       </button>
     </div>
