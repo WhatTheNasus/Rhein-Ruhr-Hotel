@@ -1,3 +1,55 @@
-{
-    
-}
+/* General Styles */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+  }
+  
+  /* Admin Panel */
+  .admin-panel {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .admin-panel h1 {
+    text-align: center;
+  }
+  
+  .admin-panel table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .admin-panel th,
+  .admin-panel td {
+    padding: 10px;
+    text-align: left; /* Center the column names to the left */
+  }
+  
+  .admin-panel th:first-child,
+  .admin-panel td:first-child {
+    padding-left: 20px; /* Add more spacing to the left of the first column */
+  }
+  
+  .admin-panel th:last-child,
+  .admin-panel td:last-child {
+    padding-right: 20px; /* Add more spacing to the right of the last column */
+  }
+  
+  .admin-panel th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .admin-panel td {
+    background-color: #fff;
+    border: 1px solid #ddd;
+  }
+  
+  .admin-panel tr:hover td {
+    background-color: #f0f8ff;
+  }
+  
