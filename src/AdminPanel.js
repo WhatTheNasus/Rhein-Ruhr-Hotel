@@ -15,9 +15,17 @@ function AdminPanel() {
   });
 
   useEffect(() => {
-    getAllHotels().then((data) => {
-      setHotels(data);
+    if (!currentUser || !currentUser.email.endsWith('@admin.com')) {
+      navigate('/signin');
+    }
+    const unsubscribe = onSnapshot(collection(db, 'hotels'), (snapshot) => {
+      const updatedHotels = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setHotels(updatedHotels);
     });
+    return () => unsubscribe();
   }, []);
 
   const handleEdit = (hotel) => {
