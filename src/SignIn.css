@@ -12,7 +12,7 @@ body {
   height: 100vh;
 }
 
-.signin-form {
+.signin-form, .verification-box {
   background-color: white;
   padding: 40px;
   border-radius: 8px;
@@ -22,12 +22,12 @@ body {
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.signin-form:hover {
+.signin-form:hover, .verification-box:hover {
   transform: scale(1.05); /* Scale evenly from the center */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-.signin-form h2 {
+h2 {
   margin-bottom: 20px;
   color: #333;
   font-size: 24px;
@@ -64,6 +64,11 @@ body {
 
 .error-message {
   color: red;
+  margin-bottom: 10px;
+}
+
+.info-message {
+  color: #007bff;
   margin-bottom: 10px;
 }
 

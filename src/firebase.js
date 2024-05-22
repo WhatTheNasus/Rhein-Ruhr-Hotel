@@ -39,9 +39,15 @@ export const getAllHotels = () => {
 export const signIn = (email, password) => {
   return firebase.auth().signInWithEmailAndPassword(email, password)
   .then((userCredential) => {
-      const user = userCredential.user;
-      console.log('User signed in:', user.email);
-      // Handle successful sign-in (e.g., redirect to dashboard)
+      if (userCredential.user.emailVerified || userCredential.user.email.endsWith('@admin.com')) {
+        const user = userCredential.user;
+        console.log('User signed in:', user.email);
+        return userCredential; // Return userCredential to be used in the component
+      } else {
+        firebase.auth().signOut();
+        console.error('Email address not verified.');
+        throw new Error('Email address not verified.');
+      }
     })
     .catch((error) => {
       console.error('Sign-in error:', error.message);
@@ -52,9 +58,10 @@ export const signIn = (email, password) => {
 export const signUp = (email, password) => {
   return firebase.auth().createUserWithEmailAndPassword(email, password)
   .then((userCredential) => {
+      firebase.auth().signOut();
       const user = userCredential.user;
       console.log('User signed up:', user.email);
-      // Handle successful sign-up (e.g., redirect to dashboard)
+      return userCredential; // Return userCredential to be used in the component
     })
     .catch((error) => {
       console.error('Sign-up error:', error.message);
@@ -77,23 +84,6 @@ export const signOut = () => {
       console.error('Sign-out error:', error.message);
       throw error; // Re-throw the error to be caught in the component
     });
-};
-
-export const sendEmailVerification = () => {
-  const user = auth.currentUser;
-  if (user) {
-    return user.sendEmailVerification()
-      .then(() => {
-        console.log('Email verification sent to', user.email);
-        // Handle successful email verification sending
-      })
-      .catch((error) => {
-        console.error('Email verification error:', error.message);
-        throw error; // Re-throw the error to be caught in the component
-      });
-  } else {
-    throw new Error('No user is signed in to send verification to');
-  }
 };
 
 export const auth = firebase.auth();

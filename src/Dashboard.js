@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { db, signOut } from './firebase'; // Import signOut from firebase
 import { useAuth } from './AuthContext'; // Import AuthContext
 import { useNavigate } from 'react-router-dom';
-import './Dashboard.css'; // Import your CSS file
+import './Dashboard.css';
 import UserLocation from './UserLocation'; // Adjust the path if necessary
 import HotelItem from './HotelItem'; // Import the HotelItem component
 import AdminPanel from './AdminPanel'; // Import the AdminPanel component
@@ -20,6 +20,7 @@ function Dashboard() {
   const [showAdminPanel, setShowAdminPanel] = useState(false); // State to control the display of AdminPanel
 
   useEffect(() => {
+    document.title = 'Hotel Dashboard';
     // Fetch all hotels when component mounts
     const unsubscribe = onSnapshot(collection(db, 'hotels'), (snapshot) => {
       const updatedHotels = snapshot.docs.map(doc => ({
@@ -70,14 +71,14 @@ function Dashboard() {
   };
 
   // Function to check if the user is an admin
-  const isAdmin = () => currentUser && currentUser.email.endsWith('@admin.com');
+  const isAdmin = () => currentUser && (currentUser.emailVerified || currentUser.email.endsWith('@admin.com'));
 
   return (
     <div className="dashboard-container">
       <div className="top-panel">
         <h1>Hotel Dashboard</h1>
         <div className="auth-buttons">
-          {currentUser ? (
+          {currentUser && (currentUser.emailVerified || currentUser.email.endsWith('@admin.com')) ? (
             <>
               <span className="user-name">{currentUser.email}</span>
               <button onClick={handleLogout} className="logout-button">Logout</button>
@@ -123,7 +124,7 @@ function Dashboard() {
             hotel={hotel} 
             currency={currency} 
             exchangeRate={exchangeRate} 
-            currentUser={currentUser} 
+            currentUser={currentUser}
             navigate={navigate} 
           />
         ))}
