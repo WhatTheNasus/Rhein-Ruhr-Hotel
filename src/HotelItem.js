@@ -40,6 +40,7 @@ function HotelItem({ hotel, currency, exchangeRate, currentUser, navigate }) {
         <p>
           Website: <a href={hotel.link} target="_blank" rel="noopener noreferrer">{hotel.link}</a>
         </p>
+        <p>Rating: {hotel.rating}/5⭐</p>
       </div>
       <div className="hotel-image-container">
         {imageUrl ? (
