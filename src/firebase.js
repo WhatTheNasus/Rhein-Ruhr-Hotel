@@ -65,4 +65,15 @@ export const signUp = (email, password) => {
     });
 };
 
+export const signOut = () => {
+  return firebase.auth().signOut()
+    .then(() => {
+      console.log('User signed out');
+    })
+    .catch((error) => {
+      console.error('Sign-out error:', error.message);
+      throw error; // Re-throw the error to be caught in the component
+    });
+};
+
 export const auth = firebase.auth();

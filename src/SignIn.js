@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { signIn, signUp } from './firebase'; // Import your Firebase configuration
+import React, { useState, useEffect } from 'react';
+import { signIn, signUp, signOut } from './firebase'; // Import signOut from firebase
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext'; // Import AuthContext
 import './SignIn.css'; // Import the CSS file for styling
@@ -10,9 +10,13 @@ function SignIn() {
   const [error, setError] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
-  const { setCurrentUser } = useAuth(); // Get setCurrentUser from context
+  const { currentUser, setCurrentUser } = useAuth(); // Get currentUser from context
 
-  console.log(setCurrentUser);
+  useEffect(() => {
+    if (currentUser) {
+      navigate('/dashboard');
+    }
+  }, [currentUser, navigate]);
 
   const handleSignIn = async () => {
     try {
@@ -36,6 +40,16 @@ function SignIn() {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      setCurrentUser(null);
+      navigate('/signin'); // Redirect to sign-in page after logout
+    } catch (error) {
+      console.error('Logout error:', error.message);
+    }
+  };
+
   const toggleSignUp = () => {
     setIsSignUp(!isSignUp);
     setError(''); // Clear any previous error messages
@@ -45,7 +59,7 @@ function SignIn() {
     <div className="signin-container">
       <div className="signin-form">
         <h2>{isSignUp ? 'Sign Up' : 'Sign In'}</h2>
-        { error && <p className="error-message">{error.slice( 0, error.lastIndexOf('(') ).replace('.', '').replace('Firebase: ', '') + '\n' + error.slice( error.lastIndexOf('(') ).replace('.', '') }</p>} {/* .slice( 0, error.lastIndexOf('(') ) */}
+        {error && <p className="error-message">{error.slice(0, error.lastIndexOf('(')).replace('.', '').replace('Firebase: ', '') + '\n' + error.slice(error.lastIndexOf('(')).replace('.', '')}</p>}
         <input
           type="email"
           placeholder="Email"
