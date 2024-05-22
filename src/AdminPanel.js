@@ -144,8 +144,8 @@ function AdminPanel() {
   return (
     <div className="admin-panel">
       <h1>Admin Panel</h1>
-      <button className="table-button add" onClick={handleAddHotelClick}>Add Hotel</button>
-      <button onClick={handleBackClick}>Back to Dashboard</button>
+      <button className="add-hotel" onClick={handleAddHotelClick}>Add Hotel</button>
+      <button className="back-to-dashboard" onClick={handleBackClick}>Back to Dashboard</button>
       <table>
         <thead>
           <tr>

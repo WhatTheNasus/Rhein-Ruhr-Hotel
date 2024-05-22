@@ -11,6 +11,7 @@ body {
     padding: 20px;
     max-width: 1250px;
     margin: 0 auto;
+    position: relative;
 }
 
 .admin-panel h1 {
@@ -140,4 +141,42 @@ body {
 /* Adjust background color on hover */
 .edit-form button[type="button"]:hover {
     background-color: #990000; /* Change background color to dark red */
+}
+
+.back-to-dashboard {
+    position: absolute;
+    top: 20px; /* Adjust the top position as needed */
+    right: 20px; /* Position at the top right corner */
+    padding: 10px 20px;
+    background-color: #dc3545; /* Red color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.back-to-dashboard:hover {
+    background-color: #990000; /* Dark red color on hover */
+    transform: scale(1.05); /* Increase size on hover */
+}
+
+.add-hotel {
+    position: absolute; /* Position the button absolutely */
+    top: 20px; /* Adjust top position */
+    left: 20px; /* Adjust left position */
+    background-color: #30bd4f; /* Apply green button color */
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.add-hotel:hover {
+    background-color: #49c464; /* Lighter shade on hover */
+    transform: scale(1.05);
 }
