@@ -1,6 +1,7 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth'; 
 import 'firebase/compat/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA62NnVI_Hfq-ET3JZUSXo8h6uLFPZv010",
@@ -63,6 +64,12 @@ export const signUp = (email, password) => {
       console.error('Sign-up error:', error.message);
       throw error; // Re-throw the error to be caught in the component
     });
+};
+
+export const updateHotel = async (hotelId, updatedData) => {
+  const hotelRef = doc(db, 'hotels', hotelId);
+  console.log('Updated Data:', updatedData); // Log the updated data
+  await updateDoc(hotelRef, updatedData);
 };
 
 export const signOut = () => {
