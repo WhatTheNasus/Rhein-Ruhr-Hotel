@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { getAllHotels, updateHotel, addHotel, deleteHotel } from './firebase';
+import { getAllHotels, updateHotel, addHotel, deleteHotel, uploadHotelImage } from './firebase';
 import { useNavigate } from 'react-router-dom';
 import { db } from './firebase';
 import { useAuth } from './AuthContext';
 import { collection, onSnapshot } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 import './AdminPanel.css';
 
 function AdminPanel() {
@@ -60,14 +59,8 @@ function AdminPanel() {
     setImageFile(file);
   };
 
-  const [imageError, setImageError] = useState('');
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!imageFile) {
-      setImageError('Please upload an image for the hotel.');
-      return;
-    }
   
     const price = parseFloat(formData.price);
     const rating = parseFloat(formData.rating);
@@ -100,14 +93,9 @@ function AdminPanel() {
         hotelId = newHotelRef.id;
         console.log('New hotel ID:', hotelId);
   
-        // Create a reference to the "folder" in Firebase Storage
-        const storage = getStorage();
-        const hotelFolderRef = ref(storage, `images/${hotelId}/1.jpg`);
-        console.log('Created folder reference:', hotelFolderRef);
-  
         // Upload the image file if it exists
         if (imageFile) {
-          await uploadBytes(hotelFolderRef, imageFile);
+          await uploadHotelImage(hotelId, imageFile);
           console.log(`Uploaded image file to folder: images/${hotelId}/`);
         }
   
@@ -131,7 +119,6 @@ function AdminPanel() {
       console.error('Error processing hotel:', error);
     }
   };
-  
 
   const handleAddHotelClick = () => {
     setEditingHotel(null);
@@ -145,25 +132,7 @@ function AdminPanel() {
     });
   };
 
-  const handleDelete = async (hotelId) => {
-    if (window.confirm('Are you sure you want to delete this hotel?')) {
-        try {
-            // Delete hotel and associated data
-            await deleteHotel(hotelId);
-            console.log(`Hotel with ID ${hotelId} deleted`);
-            
-            // Update the list of hotels
-            const data = await getAllHotels();
-            setHotels(data);
-
-        } catch (error) {
-            console.error('Error deleting hotel:', error);
-        }
-    }
-};
-  
-
-  const handleCancel = () => {
+  const handleCancelEdit = () => {
     setEditingHotel(null);
     setAddingHotel(false);
     setFormData({
@@ -173,6 +142,22 @@ function AdminPanel() {
       link: '',
       rating: ''
     });
+    setImageFile(null);
+  };
+
+  const handleDelete = async (hotelId) => {
+    if (window.confirm('Are you sure you want to delete this hotel?')) {
+      try {
+        await deleteHotel(hotelId);
+        console.log(`Hotel with ID ${hotelId} deleted`);
+
+        const data = await getAllHotels();
+        setHotels(data);
+
+      } catch (error) {
+        console.error('Error deleting hotel:', error);
+      }
+    }
   };
 
   return (
@@ -223,15 +208,13 @@ function AdminPanel() {
           
           <label className="form-label" htmlFor="rating">Rating</label>
           <input type="number" id="rating" name="rating" value={formData.rating} onChange={handleChange} required />
-
+          
           <label className="form-label" htmlFor="image">Image</label>
-          <input type="file" id="image" name="image" accept="image/jpeg" onChange={handleImageChange} />
-          {imageError && <div className="error-message">{imageError}</div>}
-
+          <input type="file" id="image" name="image" accept="image/jpeg" onChange={handleImageChange} required={addingHotel} />
           
           <div>
             <button type="submit">Save</button>
-            <button type="button" className="cancel" onClick={handleCancel}>Cancel</button>
+            <button type="button" className="cancel" onClick={handleCancelEdit}>Cancel</button>
           </div>
         </form>
       )}

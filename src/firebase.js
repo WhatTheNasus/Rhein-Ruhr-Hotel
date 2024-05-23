@@ -3,7 +3,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage'; // Import Firebase Storage
 import { doc, updateDoc, deleteDoc, addDoc, collection } from 'firebase/firestore';
-import { ref, getStorage, deleteObject } from 'firebase/storage'; // Import Firebase Storage methods
+import { ref, getStorage, deleteObject, uploadBytes } from 'firebase/storage'; // Import Firebase Storage methods
 
 const firebaseConfig = {
   apiKey: "AIzaSyA62NnVI_Hfq-ET3JZUSXo8h6uLFPZv010",
@@ -85,11 +85,11 @@ export const updateHotel = async (hotelId, updatedData) => {
 
 export const deleteHotel = async (hotelId) => {
   try {
-    // Delete hotel folder and its contents from Firebase Storage
-    const hotelFolderRef = ref(storage, `images/${hotelId}`);
-    console.log(`Hotel folder path: ${hotelFolderRef}`)
-    await deleteObject(hotelFolderRef);
-    console.log(`Hotel folder ${hotelId} deleted from Firebase Storage`);
+    // Delete the 1.jpg file from the hotel's folder in Firebase Storage
+    const storage = getStorage();
+    const hotelImageRef = ref(storage, `images/${hotelId}/1.jpg`);
+    await deleteObject(hotelImageRef);
+    console.log(`Image 1.jpg in folder images/${hotelId} deleted from Firebase Storage`);
 
     // Wait for a short delay to allow Firebase Storage to synchronize
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -104,7 +104,6 @@ export const deleteHotel = async (hotelId) => {
   }
 };
 
-
 export const addHotel = async (hotelData) => {
   try {
     const docRef = await addDoc(collection(db, 'hotels'), hotelData);
@@ -112,6 +111,18 @@ export const addHotel = async (hotelData) => {
   } catch (e) {
     console.error('Error adding document: ', e);
     throw e;
+  }
+};
+
+export const uploadHotelImage = async (hotelId, imageFile) => {
+  try {
+    const storage = getStorage();
+    const hotelImageRef = ref(storage, `images/${hotelId}/1.jpg`);
+    await uploadBytes(hotelImageRef, imageFile);
+    console.log(`Uploaded image file to folder: images/${hotelId}/1.jpg`);
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
   }
 };
 
