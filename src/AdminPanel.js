@@ -60,8 +60,14 @@ function AdminPanel() {
     setImageFile(file);
   };
 
+  const [imageError, setImageError] = useState('');
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!imageFile) {
+      setImageError('Please upload an image for the hotel.');
+      return;
+    }
   
     const price = parseFloat(formData.price);
     const rating = parseFloat(formData.rating);
@@ -141,26 +147,20 @@ function AdminPanel() {
 
   const handleDelete = async (hotelId) => {
     if (window.confirm('Are you sure you want to delete this hotel?')) {
-      try {
-        // Delete associated folder from Firebase Storage
-        const storage = getStorage();
-        const hotelFolderRef = ref(storage, `images/${hotelId}`);
-        await deleteObject(hotelFolderRef);
-        console.log(`Folder images/${hotelId} deleted from Firebase Storage`);
+        try {
+            // Delete hotel and associated data
+            await deleteHotel(hotelId);
+            console.log(`Hotel with ID ${hotelId} deleted`);
+            
+            // Update the list of hotels
+            const data = await getAllHotels();
+            setHotels(data);
 
-        // Delete hotel from Firestore
-        await deleteHotel(hotelId);
-        console.log(`Hotel with ID ${hotelId} deleted from Firestore`);
-  
-        // Update the list of hotels
-        const data = await getAllHotels();
-        setHotels(data);
-  
-      } catch (error) {
-        console.error('Error deleting hotel:', error);
-      }
+        } catch (error) {
+            console.error('Error deleting hotel:', error);
+        }
     }
-  };
+};
   
 
   const handleCancel = () => {
@@ -223,9 +223,11 @@ function AdminPanel() {
           
           <label className="form-label" htmlFor="rating">Rating</label>
           <input type="number" id="rating" name="rating" value={formData.rating} onChange={handleChange} required />
-          
+
           <label className="form-label" htmlFor="image">Image</label>
           <input type="file" id="image" name="image" accept="image/jpeg" onChange={handleImageChange} />
+          {imageError && <div className="error-message">{imageError}</div>}
+
           
           <div>
             <button type="submit">Save</button>
