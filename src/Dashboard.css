@@ -86,6 +86,7 @@ body {
 }
 
 /* Hotel List */
+
 .hotel-list {
   display: flex;
   flex-wrap: wrap;
@@ -138,7 +139,7 @@ body {
   cursor: pointer;
   font-size: 16px;
   align-self: flex-start; /* Align button to the left */
-  transition: background-color 0.3s, transform 0.3s;
+  transition: background-color 0.3s, opacity 0.3s, transform 0.3s;
   position: absolute;
   bottom: 10px; /* Position at the bottom */
   left: 20px;
@@ -148,6 +149,11 @@ body {
 
 .hotel-item:hover button {
   opacity: 1; /* Show button on hover */
+}
+
+.hotel-item button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
 }
 
 .hotel-image-container {
