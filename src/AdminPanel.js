@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { db } from './firebase';
 import { useAuth } from './AuthContext';
 import { collection, onSnapshot } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, deleteObject } from "firebase/storage";
 import './AdminPanel.css';
 
 function AdminPanel() {
@@ -19,6 +20,7 @@ function AdminPanel() {
     link: '',
     rating: ''
   });
+  const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     if (!currentUser || !currentUser.email.endsWith('@admin.com')) {
@@ -32,9 +34,8 @@ function AdminPanel() {
       setHotels(updatedHotels);
     });
     return () => unsubscribe();
-  },);
+  }, [currentUser, navigate]);
 
-  //back button use
   const handleBackClick = () => {
     navigate('/'); // Navigate to the main dashboard page
   };
@@ -54,58 +55,77 @@ function AdminPanel() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
     const price = parseFloat(formData.price);
     const rating = parseFloat(formData.rating);
-
+  
     if (isNaN(price)) {
       alert('Please enter a valid number for the price.');
       return;
     }
-
+  
     if (isNaN(rating)) {
       alert('Please enter a valid number for the rating.');
       return;
     }
-
+  
     const updatedFormData = {
       ...formData,
       price,
       rating
     };
-
-    if (editingHotel) {
-      updateHotel(editingHotel.id, updatedFormData).then(() => {
+  
+    try {
+      let hotelId;
+  
+      if (editingHotel) {
+        await updateHotel(editingHotel.id, updatedFormData);
+        hotelId = editingHotel.id;
         setEditingHotel(null);
-        setFormData({
-          name: '',
-          price: '',
-          address: '',
-          link: '',
-          rating: ''
-        });
-        getAllHotels().then((data) => setHotels(data));
-      }).catch((error) => {
-        console.error('Error updating hotel:', error);
-      });
-    } else if (addingHotel) {
-      addHotel(updatedFormData).then(() => {
+      } else if (addingHotel) {
+        const newHotelRef = await addHotel(updatedFormData);
+        hotelId = newHotelRef.id;
+        console.log('New hotel ID:', hotelId);
+  
+        // Create a reference to the "folder" in Firebase Storage
+        const storage = getStorage();
+        const hotelFolderRef = ref(storage, `images/${hotelId}/1.jpg`);
+        console.log('Created folder reference:', hotelFolderRef);
+  
+        // Upload the image file if it exists
+        if (imageFile) {
+          await uploadBytes(hotelFolderRef, imageFile);
+          console.log(`Uploaded image file to folder: images/${hotelId}/`);
+        }
+  
+        // Close the form after adding the hotel
         setAddingHotel(false);
-        setFormData({
-          name: '',
-          price: '',
-          address: '',
-          link: '',
-          rating: ''
-        });
-        getAllHotels().then((data) => setHotels(data));
-      }).catch((error) => {
-        console.error('Error adding hotel:', error);
+      }
+  
+      setFormData({
+        name: '',
+        price: '',
+        address: '',
+        link: '',
+        rating: ''
       });
+      setImageFile(null);
+  
+      const data = await getAllHotels();
+      setHotels(data);
+  
+    } catch (error) {
+      console.error('Error processing hotel:', error);
     }
   };
+  
 
   const handleAddHotelClick = () => {
     setEditingHotel(null);
@@ -119,15 +139,29 @@ function AdminPanel() {
     });
   };
 
-  const handleDelete = (hotelId) => {
+  const handleDelete = async (hotelId) => {
     if (window.confirm('Are you sure you want to delete this hotel?')) {
-      deleteHotel(hotelId).then(() => {
-        getAllHotels().then((data) => setHotels(data));
-      }).catch((error) => {
+      try {
+        // Delete associated folder from Firebase Storage
+        const storage = getStorage();
+        const hotelFolderRef = ref(storage, `images/${hotelId}`);
+        await deleteObject(hotelFolderRef);
+        console.log(`Folder images/${hotelId} deleted from Firebase Storage`);
+
+        // Delete hotel from Firestore
+        await deleteHotel(hotelId);
+        console.log(`Hotel with ID ${hotelId} deleted from Firestore`);
+  
+        // Update the list of hotels
+        const data = await getAllHotels();
+        setHotels(data);
+  
+      } catch (error) {
         console.error('Error deleting hotel:', error);
-      });
+      }
     }
   };
+  
 
   const handleCancel = () => {
     setEditingHotel(null);
@@ -189,6 +223,9 @@ function AdminPanel() {
           
           <label className="form-label" htmlFor="rating">Rating</label>
           <input type="number" id="rating" name="rating" value={formData.rating} onChange={handleChange} required />
+          
+          <label className="form-label" htmlFor="image">Image</label>
+          <input type="file" id="image" name="image" accept="image/jpeg" onChange={handleImageChange} />
           
           <div>
             <button type="submit">Save</button>

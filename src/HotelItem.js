@@ -9,7 +9,7 @@ function HotelItem({ hotel, currency, exchangeRate, currentUser, navigate }) {
     const fetchImage = async () => {
       try {
         const storage = getStorage();
-        const imagePath = `images/${encodeURIComponent(hotel.name)}.jpg`;
+        const imagePath = `images/${hotel.id}/1.jpg`;
         const imageRef = ref(storage, imagePath);
         const url = await getDownloadURL(imageRef);
         setImageUrl(url);
