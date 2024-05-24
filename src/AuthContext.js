@@ -21,10 +21,11 @@ export const AuthProvider = ({ children }) => {
       
       const fetchUserData = async () => {
         if (user) {
-          const userDocRef = doc(db, "login", "users");
+          console.log(user.uid);
+          const userDocRef = doc(db, 'users', user.uid);
           const unsubscribeUserData = onSnapshot(userDocRef, (doc) => {
             if (doc.exists()) {
-              const userData = doc.data()[user.uid];
+              const userData = doc.data();
               setUserPrivilege(userData.privilege);
             } else {
               console.error('User data not found in Firestore.');

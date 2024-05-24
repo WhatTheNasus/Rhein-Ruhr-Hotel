@@ -97,7 +97,7 @@ function SignIn() {
         <div className="verification-box">
           <h2>Email Verification Sent</h2>
           <p>Please verify your email address before signing in.</p>
-          <button onClick={handleContinueToSignIn} className="signin-button">Continue to Sign In</button>
+          <button onClick={handleContinueToSignIn} className="signin-button">Continue and Sign In</button>
         </div>
       ) : (
         <div className="signin-form">

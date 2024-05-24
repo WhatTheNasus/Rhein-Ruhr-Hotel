@@ -43,10 +43,10 @@ export const signIn = (email, password) => {
   return firebase.auth().signInWithEmailAndPassword(email, password)
     .then(async (userCredential) => {
       const user = userCredential.user;
-      const userDoc = await getDoc(doc(db, "login", "users" ));
+      const userDoc = await getDoc(doc(db, "users", user.uid ));
 
       if (userDoc.exists()) {
-        const userData = userDoc.data()[user.uid];
+        const userData = userDoc.data();
         if (userCredential.user.emailVerified || userData.privilege === 'admin') {
           console.log('User signed in:', user.email);
           return { user, userData };
@@ -70,9 +70,10 @@ export const signUp = (email, password) => {
   return firebase.auth().createUserWithEmailAndPassword(email, password)
     .then(async (userCredential) => {
       const user = userCredential.user;
-      const loginRef = doc(db, "login", "users");
+      const userData = { email: user.email, privilege: 'client'  };
 
-      await setDoc(doc(db, "login", "users"), { [user.uid]: { email: user.email, privilege: 'client'  } });
+      await setDoc(doc(db, 'users', user.uid), userData);
+      // await setDoc(docRef, { email: user.email, privilege: 'client'  } );
 
       firebase.auth().signOut();
       console.log('User signed up:', user.email);
