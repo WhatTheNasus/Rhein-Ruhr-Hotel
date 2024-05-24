@@ -68,6 +68,7 @@ body {
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
+    transition: background-color 0.3s, opacity 0.3s, transform 0.3s;
 }
 
 .table-button.delete {
@@ -83,6 +84,7 @@ body {
 /* Adjust background color on hover */
 .table-button.delete:hover {
     background-color: #990000; /* Change background color to dark red */
+    transform: scale(1.05);
 }
 
 .table-button.add:hover {
@@ -91,6 +93,7 @@ body {
 
 .table-button:hover {
     background-color: #0056b3;
+    transform: scale(1.05);
 }
 
 .edit-form {
@@ -148,7 +151,7 @@ body {
     top: 20px; /* Adjust the top position as needed */
     right: 20px; /* Position at the top right corner */
     padding: 10px 20px;
-    background-color: #dc3545; /* Red color */
+    background-color: #ff5733; /* Red color */
     color: white;
     border: none;
     border-radius: 4px;
@@ -158,7 +161,7 @@ body {
 }
 
 .back-to-dashboard:hover {
-    background-color: #990000; /* Dark red color on hover */
+    background-color: #ff704d; /* Dark red color on hover */
     transform: scale(1.05); /* Increase size on hover */
 }
 

@@ -84,28 +84,24 @@ export const signUp = (email, password) => {
     });
 };
 
-export const updateHotel = async (hotelId, updatedHotel, imageFile) => {
+export const signOut = () => {
+  return firebase.auth().signOut()
+    .then(() => {
+      console.log('User signed out');
+    })
+    .catch((error) => {
+      console.error('Sign-out error:', error.message);
+      throw error;
+    });
+};
+
+export const updateHotel = async (hotelId, updatedData) => {
+  const hotelRef = doc(db, 'hotels', hotelId);
   try {
-    const hotelRef = doc(db, "hotels", hotelId);
-    const hotelDoc = await getDoc(hotelRef);
-
-    if (!hotelDoc.exists()) {
-      throw new Error(`Hotel with ID ${hotelId} does not exist.`);
-    }
-
-    const storageRef = ref(storage, `hotel_images/${hotelId}`);
-    await deleteObject(storageRef);
-
-    const newImageRef = ref(storage, `hotel_images/${hotelId}`);
-    await newImageRef.put(imageFile);
-
-    const imageUrl = await newImageRef.getDownloadURL();
-
-    await updateDoc(hotelRef, { ...updatedHotel, imageUrl });
-
-    console.log("Hotel updated with image:", hotelId);
+    await updateDoc(hotelRef, updatedData);
+    console.log('Hotel updated successfully!');
   } catch (error) {
-    console.error("Error updating hotel with image:", error);
+    console.error('Error updating hotel:', error);
     throw error;
   }
 };
@@ -124,30 +120,20 @@ export const deleteHotel = async (hotelId) => {
     // Delete hotel document from Firestore
     const hotelRef = doc(db, 'hotels', hotelId);
     await deleteDoc(hotelRef);
-
-    console.log("Hotel deleted:", hotelId);
+    console.log(`Hotel with ID ${hotelId} deleted from Firestore`);
   } catch (error) {
-    console.error("Error deleting hotel:", error);
+    console.error('Error deleting hotel:', error);
     throw error;
   }
 };
 
 export const addHotel = async (hotelData) => {
   try {
-    const hotelRef = await addDoc(collection(db, "hotels"), newHotel);
-    const hotelId = hotelRef.id;
-
-    const storageRef = ref(storage, `hotel_images/${hotelId}`);
-    await storageRef.put(imageFile);
-
-    const imageUrl = await storageRef.getDownloadURL();
-
-    await updateDoc(hotelRef, { imageUrl });
-
-    console.log("Hotel added with image:", hotelId);
-  } catch (error) {
-    console.error("Error adding hotel with image:", error);
-    throw error;
+    const docRef = await addDoc(collection(db, 'hotels'), hotelData);
+    return docRef;
+  } catch (e) {
+    console.error('Error adding document: ', e);
+    throw e;
   }
 };
 
@@ -161,17 +147,6 @@ export const uploadHotelImage = async (hotelId, imageFile) => {
     console.error('Error uploading image:', error);
     throw error;
   }
-};
-
-export const signOut = () => {
-  return firebase.auth().signOut()
-    .then(() => {
-      console.log('User signed out');
-    })
-    .catch((error) => {
-      console.error('Sign-out error:', error.message);
-      throw error;
-    });
 };
 
 export const auth = firebase.auth();
