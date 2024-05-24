@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { signIn, signUp } from './firebase'; // Import Firebase functions including sendEmailVerification
+import { signIn, signUp } from './firebase';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext'; // Import AuthContext
-import './SignIn.css'; // Import the CSS file for styling
+import { useAuth } from './AuthContext';
+import './SignIn.css';
 
 function SignIn() {
   const [email, setEmail] = useState('');
@@ -14,12 +14,12 @@ function SignIn() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [verificationSent, setVerificationSent] = useState(false);
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useAuth(); // Get currentUser from context
+  const { currentUser, setCurrentUser } = useAuth();
 
   useEffect(() => {
     document.title = 'Sign in';
-    if (currentUser) { // Check if currentUser and its email property exist
-      if (currentUser.emailVerified || currentUser.email.endsWith('@admin.com')) {
+    if (currentUser) {
+      if (currentUser.emailVerified) {
         navigate('/');
       }
     }
@@ -28,11 +28,11 @@ function SignIn() {
   const handleSignIn = async () => {
     try {
       const userCredential = await signIn(email, password);
-      setCurrentUser(userCredential.user); // Set the user in context
-      setError(''); // Clear any previous error messages
-      navigate('/'); // Redirect to Dashboard
+      setCurrentUser(userCredential.user);
+      setError('');
+      navigate('/');
     } catch (err) {
-      console.error('Signin error:', err.message);
+      console.error('Sign-in error:', err.message);
       setError(err.message);
     }
   };
@@ -71,7 +71,7 @@ function SignIn() {
 
     try {
       const userCredential = await signUp(email, password);
-      await userCredential.user.sendEmailVerification(); // Send email verification
+      await userCredential.user.sendEmailVerification();
       setVerificationSent(true);
     } catch (err) {
       console.error('Signup error:', err.message);
@@ -82,7 +82,7 @@ function SignIn() {
   const toggleSignUp = () => {
     document.title = isSignUp ? 'Sign in' : 'Sign up';
     setIsSignUp(!isSignUp);
-    setError(''); // Clear any previous error messages
+    setError('');
   };
 
   const handleContinueToSignIn = () => {

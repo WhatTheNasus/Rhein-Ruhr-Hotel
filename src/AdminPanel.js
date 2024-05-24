@@ -10,7 +10,7 @@ function AdminPanel() {
   const [hotels, setHotels] = useState([]);
   const [editingHotel, setEditingHotel] = useState(null);
   const [addingHotel, setAddingHotel] = useState(false);
-  const { currentUser } = useAuth();
+  const { currentUser, setCurrentUser, userPrivilege, setUserPrivilege } = useAuth(); // Get currentUser from context
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -22,7 +22,7 @@ function AdminPanel() {
   const [imageFile, setImageFile] = useState(null);
 
   useEffect(() => {
-    if (!currentUser || !currentUser.email.endsWith('@admin.com')) {
+    if (!currentUser || userPrivilege != 'admin') {
       navigate('/');
     }
     const unsubscribe = onSnapshot(collection(db, 'hotels'), (snapshot) => {

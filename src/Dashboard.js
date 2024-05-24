@@ -13,7 +13,7 @@ function Dashboard() {
   const [searchTerm, setSearchTerm] = useState(''); // State for search term
   const [sortedBy, setSortedBy] = useState('rating'); // Default to sorting by rating
   const [sortOrder, setSortOrder] = useState('desc'); // Default to descending order
-  const { currentUser, setCurrentUser } = useAuth(); // Get currentUser from context
+  const { currentUser, setCurrentUser, userPrivilege, setUserPrivilege } = useAuth(); // Get currentUser from context
   const navigate = useNavigate();
   const [currency, setCurrency] = useState('€');
   const [exchangeRate, setExchangeRate] = useState(1);
@@ -21,7 +21,7 @@ function Dashboard() {
 
   useEffect(() => {
     document.title = 'Hotel Dashboard';
-    // Fetch all hotels when component mounts
+
     const unsubscribe = onSnapshot(collection(db, 'hotels'), (snapshot) => {
       const updatedHotels = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -71,14 +71,14 @@ function Dashboard() {
   };
 
   // Function to check if the user is an admin
-  const isAdmin = () => currentUser && currentUser.email.endsWith('@admin.com');
+  const isAdmin = () => currentUser && userPrivilege == 'admin';
 
   return (
     <div className="dashboard-container">
       <div className="top-panel">
         <h1>Hotel Dashboard</h1>
         <div className="auth-buttons">
-          {currentUser && (currentUser.emailVerified || currentUser.email.endsWith('@admin.com')) ? (
+          {currentUser && (currentUser.emailVerified || userPrivilege == 'admin') ? (
             <>
               <span className="user-name">{currentUser.email}</span>
               <button onClick={handleLogout} className="logout-button">Logout</button>

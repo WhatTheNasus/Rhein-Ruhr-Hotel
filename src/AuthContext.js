@@ -1,5 +1,8 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { auth } from './firebase';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
+import { db } from './firebase';
+import firebase from 'firebase/compat/app';
 
 const AuthContext = createContext();
 
@@ -9,19 +12,41 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [userPrivilege, setUserPrivilege] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-        setCurrentUser(user);
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      setCurrentUser(user);
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      
+      const fetchUserData = async () => {
+        if (user) {
+          const userDocRef = doc(db, "login", "users");
+          const unsubscribeUserData = onSnapshot(userDocRef, (doc) => {
+            if (doc.exists()) {
+              const userData = doc.data()[user.uid];
+              setUserPrivilege(userData.privilege);
+            } else {
+              console.error('User data not found in Firestore.');
+            }
+          });
+          
+          return () => unsubscribeUserData();
+        } else {
+          // Clear user privilege if user is not logged in
+          setUserPrivilege(null);
+        }
+      };
+      
+      fetchUserData();
     });
-
+  
     return unsubscribe;
-  }, []);
-
-  const value = {
-    currentUser,
-    setCurrentUser
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  }, []);  
+  
+  return (
+    <AuthContext.Provider value={{ currentUser, setCurrentUser, userPrivilege, setUserPrivilege }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

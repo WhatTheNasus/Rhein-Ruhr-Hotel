@@ -1,9 +1,9 @@
 import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth'; 
+import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import 'firebase/compat/storage'; // Import Firebase Storage
-import { doc, updateDoc, deleteDoc, addDoc, collection } from 'firebase/firestore';
-import { ref, getStorage, deleteObject, uploadBytes } from 'firebase/storage'; // Import Firebase Storage methods
+import 'firebase/compat/storage';
+import { doc, setDoc, updateDoc, deleteDoc, addDoc, collection, getDoc } from 'firebase/firestore';
+import { ref, getStorage, deleteObject, uploadBytes } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA62NnVI_Hfq-ET3JZUSXo8h6uLFPZv010",
@@ -16,9 +16,9 @@ const firebaseConfig = {
   measurementId: "G-2TSWV6LGPE"
 };
 
-firebase.initializeApp(firebaseConfig); 
+firebase.initializeApp(firebaseConfig);
 export var db = firebase.firestore();
-export var storage = firebase.storage(); // Define storage variable
+export var storage = firebase.storage();
 
 export const getAllHotels = async () => {
   const colRef = db.collection("hotels");
@@ -41,15 +41,22 @@ export const getAllHotels = async () => {
 
 export const signIn = (email, password) => {
   return firebase.auth().signInWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-      if (userCredential.user.emailVerified || userCredential.user.email.endsWith('@admin.com')) {
-        const user = userCredential.user;
-        console.log('User signed in:', user.email);
-        return userCredential; // Return userCredential to be used in the component
+    .then(async (userCredential) => {
+      const user = userCredential.user;
+      const userDoc = await getDoc(doc(db, "login", "users" ));
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data()[user.uid];
+        if (userCredential.user.emailVerified || userData.privilege === 'admin') {
+          console.log('User signed in:', user.email);
+          return { user, userData };
+        } else {
+          firebase.auth().signOut();
+          console.error('Email address not verified.');
+          throw new Error('Email address not verified.');
+        }
       } else {
-        firebase.auth().signOut();
-        console.error('Email address not verified.');
-        throw new Error('Email address not verified.');
+        throw new Error('User data not found in Firestore.'); 
       }
     })
     .catch((error) => {
@@ -58,13 +65,18 @@ export const signIn = (email, password) => {
     });
 };
 
+
 export const signUp = (email, password) => {
   return firebase.auth().createUserWithEmailAndPassword(email, password)
-  .then((userCredential) => {
-      firebase.auth().signOut();
+    .then(async (userCredential) => {
       const user = userCredential.user;
+      const loginRef = doc(db, "login", "users");
+
+      await setDoc(doc(db, "login", "users"), { [user.uid]: { email: user.email, privilege: 'client'  } });
+
+      firebase.auth().signOut();
       console.log('User signed up:', user.email);
-      return userCredential; // Return userCredential to be used in the component
+      return userCredential;
     })
     .catch((error) => {
       console.error('Sign-up error:', error.message);
@@ -72,13 +84,28 @@ export const signUp = (email, password) => {
     });
 };
 
-export const updateHotel = async (hotelId, updatedData) => {
-  const hotelRef = doc(db, 'hotels', hotelId);
+export const updateHotel = async (hotelId, updatedHotel, imageFile) => {
   try {
-    await updateDoc(hotelRef, updatedData);
-    console.log('Hotel updated successfully!');
+    const hotelRef = doc(db, "hotels", hotelId);
+    const hotelDoc = await getDoc(hotelRef);
+
+    if (!hotelDoc.exists()) {
+      throw new Error(`Hotel with ID ${hotelId} does not exist.`);
+    }
+
+    const storageRef = ref(storage, `hotel_images/${hotelId}`);
+    await deleteObject(storageRef);
+
+    const newImageRef = ref(storage, `hotel_images/${hotelId}`);
+    await newImageRef.put(imageFile);
+
+    const imageUrl = await newImageRef.getDownloadURL();
+
+    await updateDoc(hotelRef, { ...updatedHotel, imageUrl });
+
+    console.log("Hotel updated with image:", hotelId);
   } catch (error) {
-    console.error('Error updating hotel:', error);
+    console.error("Error updating hotel with image:", error);
     throw error;
   }
 };
@@ -97,20 +124,42 @@ export const deleteHotel = async (hotelId) => {
     // Delete hotel document from Firestore
     const hotelRef = doc(db, 'hotels', hotelId);
     await deleteDoc(hotelRef);
-    console.log(`Hotel with ID ${hotelId} deleted from Firestore`);
+
+    console.log("Hotel deleted:", hotelId);
   } catch (error) {
-    console.error('Error deleting hotel:', error);
+    console.error("Error deleting hotel:", error);
     throw error;
   }
 };
 
 export const addHotel = async (hotelData) => {
   try {
-    const docRef = await addDoc(collection(db, 'hotels'), hotelData);
-    return docRef;
-  } catch (e) {
-    console.error('Error adding document: ', e);
-    throw e;
+    const hotelRef = await addDoc(collection(db, "hotels"), newHotel);
+    const hotelId = hotelRef.id;
+
+    const storageRef = ref(storage, `hotel_images/${hotelId}`);
+    await storageRef.put(imageFile);
+
+    const imageUrl = await storageRef.getDownloadURL();
+
+    await updateDoc(hotelRef, { imageUrl });
+
+    console.log("Hotel added with image:", hotelId);
+  } catch (error) {
+    console.error("Error adding hotel with image:", error);
+    throw error;
+  }
+};
+
+export const uploadHotelImage = async (hotelId, imageFile) => {
+  try {
+    const storage = getStorage();
+    const hotelImageRef = ref(storage, `images/${hotelId}/1.jpg`);
+    await uploadBytes(hotelImageRef, imageFile);
+    console.log(`Uploaded image file to folder: images/${hotelId}/1.jpg`);
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
   }
 };
 
