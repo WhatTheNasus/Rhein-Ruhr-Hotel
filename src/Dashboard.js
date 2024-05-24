@@ -83,7 +83,10 @@ function Dashboard() {
               <span className="user-name">{currentUser.email}</span>
               <button onClick={handleLogout} className="logout-button">Logout</button>
               {isAdmin() && (
-                <button onClick={() => navigate('/admin')} className="admin-button">Go to Admin Panel</button>
+                <>
+                <button onClick={() => navigate('/admin')} className="admin-button">Admin Panel</button>
+                <button onClick={() => navigate('/users')} className="umanagment-button">User Management</button>
+                </>
               )}  
             </>
           ) : (

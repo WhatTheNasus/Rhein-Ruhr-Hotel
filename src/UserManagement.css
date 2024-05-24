@@ -1,0 +1,108 @@
+.user-management-panel {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .user-management-panel h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .back-to-dashboard {
+    display: block;
+    margin: 0 auto 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .back-to-dashboard:hover {
+    background-color: #0056b3;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  table th, table td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  table th {
+    background-color: #f2f2f2;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .table-button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .table-button.delete {
+    background-color: #dc3545;
+  }
+  
+  .table-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .table-button.delete:hover {
+    background-color: #c82333;
+  }
+  
+  .edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .form-label {
+    margin-bottom: 5px;
+  }
+  
+  .edit-form input, .edit-form select {
+    padding: 8px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+  }
+  
+  .edit-form button {
+    padding: 10px;
+    background-color: #28a745;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .edit-form .cancel {
+    background-color: #6c757d;
+  }
+  
+  .edit-form button:hover {
+    background-color: #218838;
+  }
+  
+  .edit-form .cancel:hover {
+    background-color: #5a6268;
+  }
+  

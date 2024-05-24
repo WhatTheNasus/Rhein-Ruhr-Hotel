@@ -47,7 +47,8 @@ body {
 
 .login-button,
 .logout-button,
-.admin-button {
+.admin-button,
+.umanagment-button {
   padding: 10px 20px;
   background-color: #ff5733; /* Orange color */
   color: white;
@@ -63,15 +64,24 @@ body {
   background-color: #30bd4f; /* Bootstrap green color */
 }
 
+.umanagment-button {
+  background-color: #aa41f0;
+}
+
 .login-button:hover,
 .logout-button:hover,
-.admin-button:hover {
+.admin-button:hover,
+.umanagment-button:hover {
   background-color: #ff704d; /* Lighter orange */
   transform: scale(1.05);
 }
 
 .admin-button:hover {
   background-color: #49c464; /* A darker shade of green for hover effect */
+}
+
+.umanagment-button:hover {
+  background-color: #b064e3;
 }
 
 /* Search Bar */
