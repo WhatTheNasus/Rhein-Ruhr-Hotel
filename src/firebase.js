@@ -163,18 +163,6 @@ export const uploadHotelImage = async (hotelId, imageFile) => {
   }
 };
 
-export const uploadHotelImage = async (hotelId, imageFile) => {
-  try {
-    const storage = getStorage();
-    const hotelImageRef = ref(storage, `images/${hotelId}/1.jpg`);
-    await uploadBytes(hotelImageRef, imageFile);
-    console.log(`Uploaded image file to folder: images/${hotelId}/1.jpg`);
-  } catch (error) {
-    console.error('Error uploading image:', error);
-    throw error;
-  }
-};
-
 export const signOut = () => {
   return firebase.auth().signOut()
     .then(() => {
