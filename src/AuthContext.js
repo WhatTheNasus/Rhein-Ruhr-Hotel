@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { collection, onSnapshot } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 import { doc } from 'firebase/firestore';
 import { db } from './firebase';
 import firebase from 'firebase/compat/app';
@@ -21,7 +21,6 @@ export const AuthProvider = ({ children }) => {
       
       const fetchUserData = async () => {
         if (user) {
-          console.log(user.uid);
           const userDocRef = doc(db, 'users', user.uid);
           const unsubscribeUserData = onSnapshot(userDocRef, (doc) => {
             if (doc.exists()) {

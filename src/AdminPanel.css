@@ -125,10 +125,12 @@ body {
     padding: 8px 15px;
     cursor: pointer;
     border-radius: 5px;
+    transition: background-color 0.3s, opacity 0.3s, transform 0.3s;
 }
 
 .edit-form button[type="submit"]:hover{
     background-color: #0056b3; /* Change background color to dark blue */
+    transform: scale(1.05);
 }
 
 .edit-form button[type="button"] {
@@ -139,11 +141,13 @@ body {
     padding: 8px 15px;
     cursor: pointer;
     border-radius: 5px;
+    transition: background-color 0.3s, opacity 0.3s, transform 0.3s;
 }
 
 /* Adjust background color on hover */
 .edit-form button[type="button"]:hover {
     background-color: #990000; /* Change background color to dark red */
+    transform: scale(1.05);
 }
 
 .back-to-dashboard {

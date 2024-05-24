@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Dashboard from './Dashboard';
 import SignIn from './SignIn';
 import AdminPanel from './AdminPanel';
-import UserManagement from './UserManagment';
+import Users from './Users';
 import { AuthProvider, useAuth } from './AuthContext';
 import NotFound from './NotFound';
 
@@ -24,7 +24,7 @@ function App() {
           {/* <Route path="/dashboard" element={<Dashboard />} /> */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/admin" element={<ProtectedRoute element={<AdminPanel />} />} />
-          <Route path="/users" element={<ProtectedRoute element={<UserManagement />} />} />
+          <Route path="/users" element={<ProtectedRoute element={<Users />} />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>

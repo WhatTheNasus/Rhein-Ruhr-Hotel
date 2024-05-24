@@ -144,7 +144,7 @@ function AdminPanel() {
     });
     setImageFile(null);
   };
-
+  
   const handleDelete = async (hotelId) => {
     if (window.confirm('Are you sure you want to delete this hotel?')) {
       try {

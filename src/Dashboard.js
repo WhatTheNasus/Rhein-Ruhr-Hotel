@@ -85,7 +85,7 @@ function Dashboard() {
               {isAdmin() && (
                 <>
                 <button onClick={() => navigate('/admin')} className="admin-button">Admin Panel</button>
-                <button onClick={() => navigate('/users')} className="umanagment-button">User Management</button>
+                <button onClick={() => navigate('/users')} className="umanagment-button">Privilege Management</button>
                 </>
               )}  
             </>
